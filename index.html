@@ -507,7 +507,7 @@
             if (!fileName) return null;
             // 外部资源使用C4为中央C，我们内部C3为中央C，所以请求八度+1
             const externalOct = oct;
-            return `https://github.com/young-timg/young-timg.github.io/blob/main/audio/${fileName}${externalOct}.mp3`;
+            return `audio/${fileName}${externalOct}.mp3`;
         }
 
         // 获取频率：使用C3=261.63Hz（中央C）
