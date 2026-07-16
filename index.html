@@ -506,8 +506,8 @@
             const fileName = map[name];
             if (!fileName) return null;
             // 外部资源使用C4为中央C，我们内部C3为中央C，所以请求八度+1
-            const externalOct = oct + 1;
-            return `http://www.changxinyu.com/piano/C${externalOct}/${fileName}.mp3`;
+            const externalOct = oct;
+            return `https://github.com/young-timg/young-timg.github.io/tree/main/audio/${fileName}{externalOct}.mp3`;
         }
 
         // 获取频率：使用C3=261.63Hz（中央C）
