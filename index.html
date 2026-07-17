@@ -316,8 +316,12 @@
             background: #f8d7da;
             color: #721c24;
         }
+        .sound-indicator.electric {
+            background: #cce5ff;
+            color: #004085;
+        }
         .control-item.select-item.sound-select select {
-            width: 96px;
+            width: 106px;
         }
         .sound-status-row {
             display: flex;
@@ -338,8 +342,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎵 旋律听辨训练</h1>
-        <p class="subtitle">相邻音程可限制 · 可选变化音 · 自动下一题 · 真实/合成双音色</p>
+        <h1>旋律听辨训练</h1>
 
         <div class="control-group">
             <div class="control-item">
@@ -369,20 +372,26 @@
             <div class="control-item select-item">
                 <label>相邻音程</label>
                 <select id="intervalLimit">
+                    <option value="7">7度</option>
                     <option value="0">无限制</option>
                     <option value="3">3度</option>
                     <option value="4">4度</option>
                     <option value="5">5度</option>
                     <option value="6">6度</option>
-                    <option value="7">7度</option>
                     <option value="8">8度</option>
                 </select>
             </div>
+            <!-- 音色选择：新增「电子琴」选项 -->
             <div class="control-item select-item sound-select">
-                <label>🎧 音色</label>
+                <label>音色</label>
                 <select id="soundType">
-                    <option value="sample">真实音色</option>
-                    <option value="synthesized">合成音色</option>
+                    <option value="acoustic_grand_piano">原声钢琴</option>
+                    <option value="electric_grand_piano">电钢琴</option>
+					<option value="electric_piano_1">电子琴</option>
+                    <option value="acoustic_guitar_steel">原声吉他</option>					
+                    <option value="electric_guitar_jazz">爵士吉他</option>
+					<option value="violin">小提琴</option>
+					<option value="synthesized">合成音色</option>
                 </select>
             </div>
         </div>
@@ -397,14 +406,14 @@
                 <select id="highNote"></select>
             </div>
             <div class="control-item" style="justify-content:center; padding-top:10px;">
-                <span id="soundStatusBadge" class="sound-indicator sample">🎵 真实音色</span>
+                <span id="soundStatusBadge" class="sound-indicator sample">原声钢琴</span>
             </div>
         </div>
 
         <div class="btn-group">
             <button class="btn" id="playBtn">▶ 播放</button>
             <button class="btn btn-secondary" id="repeatBtn">🔄 重复</button>
-            <button class="btn btn-success" id="revealBtn">👀 显示答案</button>
+            <button class="btn btn-success" id="revealBtn">📖 显示答案</button>
             <button class="btn btn-danger" id="stopBtn">⏹ 停止</button>
             <button class="btn btn-primary" id="nextBtn">⏭ 下一题</button>
         </div>
@@ -426,16 +435,28 @@
 
         <div class="status-bar" id="statusBar">就绪 – 请点击「播放」或键盘</div>
         <div id="errorTip" class="error-tip" style="display:none;"></div>
-        <div id="loadingIndicator">⏳ 正在预加载真实音色，请稍候…</div>
+        <div id="loadingIndicator">⏳ 正在预加载音色，请稍候…</div>
         <div class="footer">「下一题」生成并播放 · 点击键盘输入答案 · 空格键重复</div>
     </div>
 
     <script>
         // ---------- 音色管理 ----------
         const soundCache = {};
-        let useSample = true;
+        // 音色模式：'acoustic_grand_piano' | 'electric_piano_1' | 'synthesized'
+        let soundMode = 'acoustic_grand_piano';
         let sampleLoadFailed = false;
         let isLoadingComplete = false;
+
+        // 音色库友好名称
+        const soundFontLabels = {
+            'acoustic_grand_piano': '原声钢琴',
+            'electric_grand_piano': '电钢琴',
+			'electric_piano_1': '电子琴',
+			'acoustic_guitar_steel': '原声吉他',
+			'electric_guitar_jazz': '爵士吉他',
+			'violin': '小提琴',
+            'synthesized': '合成音色'
+        };
 
         // 合成音色
         function playSynthesizedNote(freq, duration = 0.8, volume = 0.6) {
@@ -496,18 +517,20 @@
         }
 
         // 获取 MP3 URL（内部八度+1，因为外部资源以C4为中央C）
+        // 使用 soundMode 选择音色库
         function getNoteUrl(noteName) {
             const match = noteName.match(/^([A-G]#?)(\d)$/);
             if (!match) return null;
             const name = match[1];
             const oct = parseInt(match[2]);
-            const map = { 'C': 'C', 'C#': 'CC', 'D': 'D', 'D#': 'DD', 'E': 'E', 'F': 'F', 'F#': 'FF', 'G': 'G', 'G#': 'GG',
-                'A': 'A', 'A#': 'AA', 'B': 'B' };
+            const map = { 'C': 'C', 'C#': 'Db', 'D': 'D', 'D#': 'Eb', 'E': 'E', 'F': 'F', 'F#': 'Gb', 'G': 'G', 'G#': 'Ab',
+                'A': 'A', 'A#': 'Bb', 'B': 'B' };
             const fileName = map[name];
             if (!fileName) return null;
-            // 外部资源使用C4为中央C，我们内部C3为中央C，所以请求八度+1
-            const externalOct = oct;
-            return `audio/${fileName}${externalOct}.mp3`;
+            const externalOct = oct + 1;
+            // 使用当前音色库
+            const basePath = `https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/${soundMode}-mp3/`;
+            return `${basePath}${fileName}${externalOct}.mp3`;
         }
 
         // 获取频率：使用C3=261.63Hz（中央C）
@@ -520,13 +543,12 @@
             const oct = parseInt(match[2]);
             const base = noteFreq[name];
             if (!base) return null;
-            // 中央C为C3，频率261.63，所以公式 oct-3
             return base * Math.pow(2, oct - 3);
         }
 
         // 预加载单个音符
         function preloadSingleNote(noteName) {
-            if (sampleLoadFailed || !useSample) return;
+            if (sampleLoadFailed || soundMode === 'synthesized') return;
             const url = getNoteUrl(noteName);
             if (!url) return;
             if (soundCache[noteName]) return;
@@ -538,7 +560,9 @@
                 onloaderror: function(e) {
                     console.warn('预加载失败:', noteName, e);
                     sampleLoadFailed = true;
+                    // 自动回退到合成音色
                     document.getElementById('soundType').value = 'synthesized';
+                    soundMode = 'synthesized';
                     updateSoundStatusBadge('synthesized', true);
                     document.getElementById('errorTip').textContent = '⚠️ 真实音色加载失败，已自动切换为合成音色';
                     document.getElementById('errorTip').style.display = 'block';
@@ -549,7 +573,7 @@
 
         // 预加载键盘所有音符（E2 ~ E4）
         function preloadAllKeyboardNotes() {
-            if (sampleLoadFailed || !useSample) return;
+            if (sampleLoadFailed || soundMode === 'synthesized') return;
             const allNotes = [];
             const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
             for (let oct = 2; oct <= 4; oct++) {
@@ -563,7 +587,8 @@
             const targetNotes = allNotes.slice(startIdx, endIdx + 1);
 
             document.getElementById('loadingIndicator').style.display = 'block';
-            statusBar.textContent = '⏳ 正在预加载真实音色，请稍候…';
+            const label = soundFontLabels[soundMode] || '音色';
+            statusBar.textContent = `⏳ 正在预加载 ${label}，请稍候…`;
 
             let loadedCount = 0;
             const total = targetNotes.length;
@@ -574,7 +599,7 @@
                     if (loadedCount === total) {
                         isLoadingComplete = true;
                         document.getElementById('loadingIndicator').style.display = 'none';
-                        statusBar.textContent = '✅ 真实音色预加载完成，可流畅播放';
+                        statusBar.textContent = `✅ ${label} 预加载完成，可流畅播放`;
                     }
                 }, 10);
             });
@@ -582,7 +607,7 @@
 
         // 播放音符
         function playNoteByName(noteName, duration = 0.7) {
-            if (sampleLoadFailed || !useSample) {
+            if (soundMode === 'synthesized' || sampleLoadFailed) {
                 const freq = getFreqFromNoteName(noteName);
                 if (freq) playSynthesizedNote(freq, duration);
                 return;
@@ -593,7 +618,7 @@
             }
             const freq = getFreqFromNoteName(noteName);
             if (freq) playSynthesizedNote(freq, duration);
-            if (!sampleLoadFailed && useSample) {
+            if (soundMode !== 'synthesized' && !sampleLoadFailed) {
                 setTimeout(() => {
                     preloadSingleNote(noteName);
                 }, 50);
@@ -603,44 +628,52 @@
         // 音色切换
         function switchSoundType(type) {
             stopPlayback();
-            if (type === 'sample') {
-                useSample = true;
-                sampleLoadFailed = false;
-                document.getElementById('errorTip').style.display = 'none';
-                document.getElementById('errorTip').textContent = '';
-                updateSoundStatusBadge('sample', false);
-                statusBar.textContent = '已切换为真实音色，正在预加载…';
-                for (let key in soundCache) {
-                    delete soundCache[key];
+            // 清空缓存
+            for (let key in soundCache) {
+                if (soundCache[key] && typeof soundCache[key].unload === 'function') {
+                    soundCache[key].unload();
                 }
-                preloadAllKeyboardNotes();
-            } else {
-                useSample = false;
-                document.getElementById('errorTip').style.display = 'none';
-                document.getElementById('errorTip').textContent = '';
+                delete soundCache[key];
+            }
+            sampleLoadFailed = false;
+            isLoadingComplete = false;
+            document.getElementById('errorTip').style.display = 'none';
+            document.getElementById('errorTip').textContent = '';
+
+            soundMode = type;
+
+            if (type === 'synthesized') {
+                document.getElementById('loadingIndicator').style.display = 'none';
                 updateSoundStatusBadge('synthesized', false);
                 statusBar.textContent = '已切换为合成音色（Web Audio）';
-                document.getElementById('loadingIndicator').style.display = 'none';
-                isLoadingComplete = false;
+            } else {
+                const label = soundFontLabels[type] || '音色';
+                updateSoundStatusBadge(type, false);
+                statusBar.textContent = `已切换为 ${label}，正在预加载…`;
+                // 预加载
+                setTimeout(() => {
+                    preloadAllKeyboardNotes();
+                }, 100);
             }
         }
 
         function updateSoundStatusBadge(type, isFallback = false) {
             const badge = document.getElementById('soundStatusBadge');
-            if (type === 'sample') {
-                badge.textContent = '🎵 真实音色';
-                badge.className = 'sound-indicator sample';
-                if (isFallback) {
-                    badge.textContent = '⚠️ 真实音色(加载失败)';
-                    badge.className = 'sound-indicator fallback';
-                }
-            } else {
-                badge.textContent = '🎹 合成音色';
-                badge.className = 'sound-indicator synthesized';
-                if (isFallback) {
-                    badge.textContent = '⚠️ 合成音色(备用)';
-                    badge.className = 'sound-indicator fallback';
-                }
+            const labels = {
+                'acoustic_grand_piano': { text: '原声钢琴', cls: 'sample' },
+				'electric_grand_piano': { text: '电钢琴', cls: 'electric' },
+                'electric_piano_1': { text: '电子琴', cls: 'electric' },
+				'acoustic_guitar_steel': { text: '原声吉他', cls: 'electric' },
+				'electric_guitar_jazz': { text: '爵士吉他', cls: 'electric' },
+				'violin': { text: '小提琴', cls: 'electric' },
+                'synthesized': { text: '合成音色', cls: 'synthesized' }
+            };
+            const info = labels[type] || labels['acoustic_grand_piano'];
+            badge.textContent = info.text;
+            badge.className = 'sound-indicator ' + info.cls;
+            if (isFallback) {
+                badge.textContent = '⚠️ ' + info.text + '(回退)';
+                badge.className = 'sound-indicator fallback';
             }
         }
 
@@ -880,7 +913,7 @@
             repeatCountTotal = repeatCount;
             currentRepeatIndex = 0;
 
-            if (!sampleLoadFailed && useSample) {
+            if (soundMode !== 'synthesized' && !sampleLoadFailed) {
                 currentNoteNames.forEach(note => preloadSingleNote(note));
             }
 
@@ -958,9 +991,11 @@
 
         // ---------- 启动 ----------
         window.addEventListener('load', () => {
-            statusBar.textContent = '就绪 – 正在预加载真实音色…';
-            soundTypeSelect.value = 'sample';
-            updateSoundStatusBadge('sample', false);
+            // 默认选择原声钢琴
+            soundTypeSelect.value = 'acoustic_grand_piano';
+            soundMode = 'acoustic_grand_piano';
+            updateSoundStatusBadge('acoustic_grand_piano', false);
+            statusBar.textContent = '就绪 – 正在预加载原声钢琴…';
             preloadAllKeyboardNotes();
         });
     </script>
