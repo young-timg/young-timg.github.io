@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>旋律听辨训练</title>
+    <title>练耳训练</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js">
     </script>
     <style>
@@ -180,9 +180,7 @@
             display: inline-block;
             opacity: 0;
             transition: opacity 0.3s;
-        }
-        .answer-area.show {
-            opacity: 1;
+            display: none; /* 直接隐藏，不再使用 */
         }
         .input-area {
             margin: 8px 0;
@@ -338,13 +336,23 @@
             margin-top: 2px;
             display: none;
         }
+        .control-item.select-item.mode-select select {
+            width: 100px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>旋律听辨训练</h1>
+        <h1>🎵 练耳训练</h1>
 
         <div class="control-group">
+            <div class="control-item select-item mode-select">
+                <label>训练模式</label>
+                <select id="modeSelect">
+                    <option value="melody">旋律听辨</option>
+                    <option value="interval">音程听辨</option>
+                </select>
+            </div>
             <div class="control-item">
                 <label>起始音</label>
                 <select id="rootNote"></select>
@@ -359,7 +367,7 @@
             </div>
             <div class="control-item">
                 <label>速度(秒)</label>
-                <input type="number" id="speed" value="1.0" step="0.1" min="0.1" max="2.0">
+                <input type="number" id="speed" value="1.5" step="0.1" min="0.1" max="2.0">
             </div>
             <div class="control-item">
                 <label>重复次数</label>
@@ -381,17 +389,16 @@
                     <option value="8">8度</option>
                 </select>
             </div>
-            <!-- 音色选择：新增「电子琴」选项 -->
             <div class="control-item select-item sound-select">
                 <label>音色</label>
                 <select id="soundType">
                     <option value="acoustic_grand_piano">原声钢琴</option>
                     <option value="electric_grand_piano">电钢琴</option>
-					<option value="electric_piano_1">电子琴</option>
-                    <option value="acoustic_guitar_steel">原声吉他</option>					
+                    <option value="electric_piano_1">电子琴</option>
+                    <option value="acoustic_guitar_steel">原声吉他</option>
                     <option value="electric_guitar_jazz">爵士吉他</option>
-					<option value="violin">小提琴</option>
-					<option value="synthesized">合成音色</option>
+                    <option value="violin">小提琴</option>
+                    <option value="synthesized">合成音色</option>
                 </select>
             </div>
         </div>
@@ -442,19 +449,17 @@
     <script>
         // ---------- 音色管理 ----------
         const soundCache = {};
-        // 音色模式：'acoustic_grand_piano' | 'electric_piano_1' | 'synthesized'
         let soundMode = 'acoustic_grand_piano';
         let sampleLoadFailed = false;
         let isLoadingComplete = false;
 
-        // 音色库友好名称
         const soundFontLabels = {
             'acoustic_grand_piano': '原声钢琴',
             'electric_grand_piano': '电钢琴',
-			'electric_piano_1': '电子琴',
-			'acoustic_guitar_steel': '原声吉他',
-			'electric_guitar_jazz': '爵士吉他',
-			'violin': '小提琴',
+            'electric_piano_1': '电子琴',
+            'acoustic_guitar_steel': '原声吉他',
+            'electric_guitar_jazz': '爵士吉他',
+            'violin': '小提琴',
             'synthesized': '合成音色'
         };
 
@@ -516,8 +521,6 @@
             setTimeout(() => { masterGain.gain.setValueAtTime(0, ctx.currentTime); }, (duration + 0.2) * 1000);
         }
 
-        // 获取 MP3 URL（内部八度+1，因为外部资源以C4为中央C）
-        // 使用 soundMode 选择音色库
         function getNoteUrl(noteName) {
             const match = noteName.match(/^([A-G]#?)(\d)$/);
             if (!match) return null;
@@ -528,12 +531,10 @@
             const fileName = map[name];
             if (!fileName) return null;
             const externalOct = oct + 1;
-            // 使用当前音色库
             const basePath = `https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/${soundMode}-mp3/`;
             return `${basePath}${fileName}${externalOct}.mp3`;
         }
 
-        // 获取频率：使用C3=261.63Hz（中央C）
         function getFreqFromNoteName(noteWithOct) {
             const noteFreq = { 'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13, 'E': 329.63, 'F': 349.23, 'F#': 369.99,
                 'G': 392.00, 'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88 };
@@ -546,7 +547,6 @@
             return base * Math.pow(2, oct - 3);
         }
 
-        // 预加载单个音符
         function preloadSingleNote(noteName) {
             if (sampleLoadFailed || soundMode === 'synthesized') return;
             const url = getNoteUrl(noteName);
@@ -560,7 +560,6 @@
                 onloaderror: function(e) {
                     console.warn('预加载失败:', noteName, e);
                     sampleLoadFailed = true;
-                    // 自动回退到合成音色
                     document.getElementById('soundType').value = 'synthesized';
                     soundMode = 'synthesized';
                     updateSoundStatusBadge('synthesized', true);
@@ -571,7 +570,6 @@
             soundCache[noteName] = sound;
         }
 
-        // 预加载键盘所有音符（E2 ~ E4）
         function preloadAllKeyboardNotes() {
             if (sampleLoadFailed || soundMode === 'synthesized') return;
             const allNotes = [];
@@ -605,7 +603,6 @@
             });
         }
 
-        // 播放音符
         function playNoteByName(noteName, duration = 0.7) {
             if (soundMode === 'synthesized' || sampleLoadFailed) {
                 const freq = getFreqFromNoteName(noteName);
@@ -625,10 +622,8 @@
             }
         }
 
-        // 音色切换
         function switchSoundType(type) {
             stopPlayback();
-            // 清空缓存
             for (let key in soundCache) {
                 if (soundCache[key] && typeof soundCache[key].unload === 'function') {
                     soundCache[key].unload();
@@ -650,7 +645,6 @@
                 const label = soundFontLabels[type] || '音色';
                 updateSoundStatusBadge(type, false);
                 statusBar.textContent = `已切换为 ${label}，正在预加载…`;
-                // 预加载
                 setTimeout(() => {
                     preloadAllKeyboardNotes();
                 }, 100);
@@ -661,11 +655,11 @@
             const badge = document.getElementById('soundStatusBadge');
             const labels = {
                 'acoustic_grand_piano': { text: '原声钢琴', cls: 'sample' },
-				'electric_grand_piano': { text: '电钢琴', cls: 'electric' },
+                'electric_grand_piano': { text: '电钢琴', cls: 'electric' },
                 'electric_piano_1': { text: '电子琴', cls: 'electric' },
-				'acoustic_guitar_steel': { text: '原声吉他', cls: 'electric' },
-				'electric_guitar_jazz': { text: '爵士吉他', cls: 'electric' },
-				'violin': { text: '小提琴', cls: 'electric' },
+                'acoustic_guitar_steel': { text: '原声吉他', cls: 'electric' },
+                'electric_guitar_jazz': { text: '爵士吉他', cls: 'electric' },
+                'violin': { text: '小提琴', cls: 'electric' },
                 'synthesized': { text: '合成音色', cls: 'synthesized' }
             };
             const info = labels[type] || labels['acoustic_grand_piano'];
@@ -678,14 +672,17 @@
         }
 
         // ---------- UI 逻辑 ----------
+        let trainingMode = 'melody';
         let currentMelody = [];
         let currentNoteNames = [];
+        let currentReferenceNote = ''; // 音程模式下的参考音
         let isPlaying = false;
         let timeoutIds = [];
         let repeatCountTotal = 1;
         let currentRepeatIndex = 0;
         let userInputNotes = [];
 
+        const modeSelect = document.getElementById('modeSelect');
         const rootSelect = document.getElementById('rootNote');
         const octaveInput = document.getElementById('octave');
         const noteCountInput = document.getElementById('noteCount');
@@ -709,11 +706,24 @@
         const inputKeyboard = document.getElementById('inputKeyboard');
         const soundTypeSelect = document.getElementById('soundType');
 
+        modeSelect.addEventListener('change', function() {
+            trainingMode = this.value;
+            clearUserInput();
+            stopPlayback();
+            noteDisplay.textContent = '— — —';
+            answerDisplay.textContent = '';
+            answerDisplay.classList.remove('show');
+            if (trainingMode === 'interval') {
+                statusBar.textContent = '音程听辨模式 – 点击「播放」听取参考音和两个音';
+            } else {
+                statusBar.textContent = '旋律听辨模式 – 点击「播放」生成旋律';
+            }
+        });
+
         soundTypeSelect.addEventListener('change', function() {
             switchSoundType(this.value);
         });
 
-        // 填充起始音
         function populateRootSelect(includeChromatic) {
             const currentValue = rootSelect.value;
             rootSelect.innerHTML = '';
@@ -732,7 +742,6 @@
         populateRootSelect(false);
         includeChromatic.addEventListener('change', function() { populateRootSelect(this.checked); });
 
-        // 填充范围（默认F2 ~ E4）
         function fillNoteRangeSelect(selectEl, defaultVal) {
             selectEl.innerHTML = '';
             const octaves = [2, 3, 4, 5, 6];
@@ -751,7 +760,6 @@
         fillNoteRangeSelect(lowNoteSelect, 'F2');
         fillNoteRangeSelect(highNoteSelect, 'E4');
 
-        // 构建键盘（E2 ~ E4）
         function buildInputKeyboard() {
             inputKeyboard.innerHTML = '';
             const allKeys = [];
@@ -781,10 +789,25 @@
                     e.stopPropagation();
                     const note = this.dataset.note;
                     playNoteByName(note, 0.6);
-                    userInputNotes.push(note);
-                    updateUserInputDisplay();
-                    this.classList.add('selected');
-                    setTimeout(() => this.classList.remove('selected'), 200);
+                    if (trainingMode === 'interval') {
+                        if (userInputNotes.length >= 2) {
+                            userInputNotes = [];
+                        }
+                        userInputNotes.push(note);
+                        userInputNotes.sort((a, b) => {
+                            const fa = getFreqFromNoteName(a);
+                            const fb = getFreqFromNoteName(b);
+                            return fa - fb;
+                        });
+                        updateUserInputDisplay();
+                        this.classList.add('selected');
+                        setTimeout(() => this.classList.remove('selected'), 200);
+                    } else {
+                        userInputNotes.push(note);
+                        updateUserInputDisplay();
+                        this.classList.add('selected');
+                        setTimeout(() => this.classList.remove('selected'), 200);
+                    }
                 });
                 inputKeyboard.appendChild(keyDiv);
             });
@@ -792,8 +815,15 @@
         buildInputKeyboard();
 
         function updateUserInputDisplay() {
-            if (userInputNotes.length === 0) userInputDisplay.textContent = '🎹 点击下方键盘输入';
-            else userInputDisplay.textContent = userInputNotes.join('  ');
+            if (userInputNotes.length === 0) {
+                if (trainingMode === 'interval') {
+                    userInputDisplay.textContent = '🎹 点击下方键盘输入';
+                } else {
+                    userInputDisplay.textContent = '🎹 点击下方键盘输入';
+                }
+            } else {
+                userInputDisplay.textContent = userInputNotes.join('  ');
+            }
             document.querySelectorAll('.key.correct, .key.wrong').forEach(k => k.classList.remove('correct', 'wrong'));
         }
 
@@ -803,39 +833,152 @@
             document.querySelectorAll('.key.correct, .key.wrong').forEach(k => k.classList.remove('correct', 'wrong'));
         }
 
+        // ---- 修改答案显示：只显示在上方大号区域，下方小号区域清空隐藏 ----
         function revealAnswer() {
-            if (currentNoteNames.length === 0) { alert('请先生成一个旋律！'); return; }
-            answerDisplay.textContent = currentNoteNames.join('  ');
-            answerDisplay.classList.add('show');
+            if (currentNoteNames.length === 0) { alert('请先生成一个题目！'); return; }
+            // 只在大号区域显示答案
             noteDisplay.innerHTML = currentNoteNames.map(n => `<span class="highlight">${n}</span>`).join(' ');
+            // 清空并隐藏小号区域
+            answerDisplay.textContent = '';
+            answerDisplay.classList.remove('show');
         }
 
         function checkAnswer() {
-            if (currentNoteNames.length === 0) { alert('请先生成一个旋律！'); return; }
+            if (currentNoteNames.length === 0) { alert('请先生成一个题目！'); return; }
             if (userInputNotes.length === 0) { alert('请在键盘上点击输入您的答案！'); return; }
-            const minLen = Math.min(userInputNotes.length, currentNoteNames.length);
+
             const keyElements = document.querySelectorAll('#inputKeyboard .key');
             keyElements.forEach(k => k.classList.remove('correct', 'wrong'));
-            for (let i = 0; i < minLen; i++) {
-                const userNote = userInputNotes[i];
-                const correctNote = currentNoteNames[i];
-                const isCorrect = userNote === correctNote;
-                let targetKey = null;
-                keyElements.forEach(k => { if (k.dataset.note === userNote) targetKey = k; });
-                if (targetKey) targetKey.classList.add(isCorrect ? 'correct' : 'wrong');
-            }
-            revealAnswer();
-            const isFullyCorrect = (userInputNotes.length === currentNoteNames.length &&
-                userInputNotes.every((v, i) => v === currentNoteNames[i]));
-            if (isFullyCorrect) {
-                statusBar.textContent = '🎉 完全正确！即将自动进入下一题...';
-                setTimeout(() => { nextQuestion(); }, 1200);
+
+            if (trainingMode === 'interval') {
+                const userSorted = [...userInputNotes].sort((a, b) => {
+                    const fa = getFreqFromNoteName(a);
+                    const fb = getFreqFromNoteName(b);
+                    return fa - fb;
+                });
+                const correctSorted = [...currentNoteNames].sort((a, b) => {
+                    const fa = getFreqFromNoteName(a);
+                    const fb = getFreqFromNoteName(b);
+                    return fa - fb;
+                });
+                let allCorrect = true;
+                if (userSorted.length !== correctSorted.length) {
+                    allCorrect = false;
+                } else {
+                    for (let i = 0; i < userSorted.length; i++) {
+                        if (userSorted[i] !== correctSorted[i]) {
+                            allCorrect = false;
+                            break;
+                        }
+                    }
+                }
+                userInputNotes.forEach(note => {
+                    let targetKey = null;
+                    keyElements.forEach(k => { if (k.dataset.note === note) targetKey = k; });
+                    if (targetKey) {
+                        const isCorrect = correctSorted.includes(note);
+                        targetKey.classList.add(isCorrect ? 'correct' : 'wrong');
+                    }
+                });
+                revealAnswer(); // 显示答案（两个音）
+                if (allCorrect) {
+                    statusBar.textContent = '🎉 完全正确！即将自动进入下一题...';
+                    setTimeout(() => { nextQuestion(); }, 1200);
+                } else {
+                    statusBar.textContent = '❌ 有误，请对照答案（绿色=正确，红色=错误）';
+                }
             } else {
-                statusBar.textContent = '❌ 有误，请对照答案（绿色=正确，红色=错误）';
+                // 旋律模式
+                const minLen = Math.min(userInputNotes.length, currentNoteNames.length);
+                for (let i = 0; i < minLen; i++) {
+                    const userNote = userInputNotes[i];
+                    const correctNote = currentNoteNames[i];
+                    const isCorrect = userNote === correctNote;
+                    let targetKey = null;
+                    keyElements.forEach(k => { if (k.dataset.note === userNote) targetKey = k; });
+                    if (targetKey) targetKey.classList.add(isCorrect ? 'correct' : 'wrong');
+                }
+                revealAnswer(); // 显示答案（所有音）
+                const isFullyCorrect = (userInputNotes.length === currentNoteNames.length &&
+                    userInputNotes.every((v, i) => v === currentNoteNames[i]));
+                if (isFullyCorrect) {
+                    statusBar.textContent = '🎉 完全正确！即将自动进入下一题...';
+                    setTimeout(() => { nextQuestion(); }, 1200);
+                } else {
+                    statusBar.textContent = '❌ 有误，请对照答案（绿色=正确，红色=错误）';
+                }
             }
         }
 
-        // 生成并播放
+        // ---------- 播放函数 ----------
+        function playIntervalSequence(timesLeft, speed) {
+            if (!isPlaying || timesLeft <= 0) {
+                if (timesLeft <= 0) { statusBar.textContent = '播放完成';
+                    isPlaying = false; }
+                return;
+            }
+            // 播放参考音
+            const refTimeout = setTimeout(() => {
+                if (!isPlaying) return;
+                playNoteByName(currentReferenceNote, 0.5);
+            }, 0);
+            timeoutIds.push(refTimeout);
+
+            // 延迟后播放双音
+            const intervalDelay = 600 * speed;
+            const intervalTimeout = setTimeout(() => {
+                if (!isPlaying) return;
+                playNoteByName(currentNoteNames[0], 0.8);
+                playNoteByName(currentNoteNames[1], 0.8);
+                statusBar.textContent = `音程播放 (${currentRepeatIndex + 1}/${repeatCountTotal})`;
+            }, intervalDelay);
+            timeoutIds.push(intervalTimeout);
+
+            const totalDuration = (0.5 + 0.6 + 0.8 + 0.2) * 1000 * speed;
+            const nextTimeout = setTimeout(() => {
+                if (!isPlaying) return;
+                currentRepeatIndex++;
+                playIntervalSequence(timesLeft - 1, speed);
+            }, totalDuration);
+            timeoutIds.push(nextTimeout);
+
+            if (currentRepeatIndex === 0) {
+                statusBar.textContent = `音程播放 (1/${repeatCountTotal})`;
+            }
+        }
+
+        function playSequence(timesLeft, speed) {
+            if (!isPlaying || timesLeft <= 0) {
+                if (timesLeft <= 0) { statusBar.textContent = '播放完成';
+                    isPlaying = false; }
+                return;
+            }
+            currentNoteNames.forEach((noteName, idx) => {
+                const timeoutId = setTimeout(() => {
+                    if (!isPlaying) return;
+                    playNoteByName(noteName, 0.7);
+                }, idx * speed * 1000);
+                timeoutIds.push(timeoutId);
+            });
+            const totalDuration = currentNoteNames.length * speed * 1000 + 400;
+            const timeoutId = setTimeout(() => {
+                if (!isPlaying) return;
+                currentRepeatIndex++;
+                statusBar.textContent = `播放中 (${currentRepeatIndex}/${repeatCountTotal})`;
+                playSequence(timesLeft - 1, speed);
+            }, totalDuration);
+            timeoutIds.push(timeoutId);
+            if (currentRepeatIndex === 0) statusBar.textContent = `播放中 (1/${repeatCountTotal})`;
+        }
+
+        function stopPlayback() {
+            isPlaying = false;
+            timeoutIds.forEach(id => clearTimeout(id));
+            timeoutIds = [];
+            statusBar.textContent = '已停止';
+        }
+
+        // ---------- 生成 ----------
         function generateAndPlay() {
             stopPlayback();
             const root = rootSelect.value;
@@ -872,6 +1015,67 @@
             const availableNames = useChromatic ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'] : ['C', 'D',
                 'E', 'F', 'G', 'A', 'B'
             ];
+
+            if (trainingMode === 'interval') {
+                // ---- 音程听辨 ----
+                const refNote = root + octave;
+                currentReferenceNote = refNote;
+
+                let attempts = 0;
+                let note1, note2;
+                let found = false;
+                while (!found && attempts < 500) {
+                    attempts++;
+                    const name1 = availableNames[Math.floor(Math.random() * availableNames.length)];
+                    const oct1 = Math.min(7, Math.max(2, octave + Math.floor(Math.random() * 5) - 2));
+                    const full1 = name1 + oct1;
+                    const freq1 = getFreqFromNoteName(full1);
+                    if (!freq1 || freq1 < lowFreq || freq1 > highFreq) continue;
+
+                    const name2 = availableNames[Math.floor(Math.random() * availableNames.length)];
+                    const oct2 = Math.min(7, Math.max(2, octave + Math.floor(Math.random() * 5) - 2));
+                    const full2 = name2 + oct2;
+                    const freq2 = getFreqFromNoteName(full2);
+                    if (!freq2 || freq2 < lowFreq || freq2 > highFreq || full1 === full2) continue;
+
+                    const semitoneDiff = Math.abs(Math.round(12 * Math.log2(freq2 / freq1)));
+                    if (maxSemitone > 0 && semitoneDiff > maxSemitone) continue;
+                    if (semitoneDiff === 0) continue;
+
+                    note1 = full1;
+                    note2 = full2;
+                    found = true;
+                }
+                if (!found) {
+                    alert('无法生成符合要求的两个音，请放宽音域或音程限制。');
+                    return;
+                }
+
+                const sorted = [note1, note2].sort((a, b) => {
+                    const fa = getFreqFromNoteName(a);
+                    const fb = getFreqFromNoteName(b);
+                    return fa - fb;
+                });
+                currentNoteNames = sorted;
+                currentMelody = sorted.map(n => getFreqFromNoteName(n));
+
+                if (soundMode !== 'synthesized' && !sampleLoadFailed) {
+                    [refNote, ...currentNoteNames].forEach(n => preloadSingleNote(n));
+                }
+
+                // 播放时显示提示
+                answerDisplay.textContent = '';
+                answerDisplay.classList.remove('show');
+                clearUserInput();
+
+                repeatCountTotal = repeatCount;
+                currentRepeatIndex = 0;
+                isPlaying = true;
+                playIntervalSequence(repeatCountTotal, speed);
+                return;
+            }
+
+            // ---- 旋律听辨 ----
             const freqs = [];
             const noteNamesWithOct = [];
             freqs.push(rootFreq);
@@ -927,38 +1131,19 @@
             playSequence(repeatCountTotal, speed);
         }
 
-        function playSequence(timesLeft, speed) {
-            if (!isPlaying || timesLeft <= 0) {
-                if (timesLeft <= 0) { statusBar.textContent = '播放完成';
-                    isPlaying = false; }
+        function repeatCurrentMelody() {
+            if (trainingMode === 'interval') {
+                if (currentNoteNames.length === 0) { generateAndPlay(); return; }
+                stopPlayback();
+                const repeatCount = parseInt(repeatCountInput.value) || 1;
+                const speed = parseFloat(speedInput.value) || 1.0;
+                repeatCountTotal = repeatCount;
+                currentRepeatIndex = 0;
+                isPlaying = true;
+                playIntervalSequence(repeatCount, speed);
                 return;
             }
-            currentNoteNames.forEach((noteName, idx) => {
-                const timeoutId = setTimeout(() => {
-                    if (!isPlaying) return;
-                    playNoteByName(noteName, 0.7);
-                }, idx * speed * 1000);
-                timeoutIds.push(timeoutId);
-            });
-            const totalDuration = currentNoteNames.length * speed * 1000 + 400;
-            const timeoutId = setTimeout(() => {
-                if (!isPlaying) return;
-                currentRepeatIndex++;
-                statusBar.textContent = `播放中 (${currentRepeatIndex}/${repeatCountTotal})`;
-                playSequence(timesLeft - 1, speed);
-            }, totalDuration);
-            timeoutIds.push(timeoutId);
-            if (currentRepeatIndex === 0) statusBar.textContent = `播放中 (1/${repeatCountTotal})`;
-        }
-
-        function stopPlayback() {
-            isPlaying = false;
-            timeoutIds.forEach(id => clearTimeout(id));
-            timeoutIds = [];
-            statusBar.textContent = '已停止';
-        }
-
-        function repeatCurrentMelody() {
+            // 旋律模式
             if (currentMelody.length === 0) { generateAndPlay(); return; }
             stopPlayback();
             const repeatCount = parseInt(repeatCountInput.value) || 1;
@@ -972,7 +1157,9 @@
             playSequence(repeatCount, speed);
         }
 
-        function nextQuestion() { generateAndPlay(); }
+        function nextQuestion() {
+            generateAndPlay();
+        }
 
         // 事件绑定
         playBtn.addEventListener('click', generateAndPlay);
@@ -989,14 +1176,19 @@
                 repeatCurrentMelody(); }
         });
 
-        // ---------- 启动 ----------
         window.addEventListener('load', () => {
-            // 默认选择原声钢琴
             soundTypeSelect.value = 'acoustic_grand_piano';
             soundMode = 'acoustic_grand_piano';
             updateSoundStatusBadge('acoustic_grand_piano', false);
             statusBar.textContent = '就绪 – 正在预加载原声钢琴…';
             preloadAllKeyboardNotes();
+            modeSelect.value = 'melody';
+            trainingMode = 'melody';
+
+            // ---- 设置默认值 ----
+            rootSelect.value = 'A';          // 起始音改为 A
+            lowNoteSelect.value = 'G2';      // 最低音改为 G2
+            highNoteSelect.value = 'D4';     // 最高音改为 D4
         });
     </script>
 </body>
