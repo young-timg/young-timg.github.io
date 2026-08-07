@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js">
     </script>
     <style>
+        /* 样式保持不变，省略以节省篇幅，实际请保留原样式 */
         * {
             box-sizing: border-box;
             font-family: system-ui, sans-serif;
@@ -180,7 +181,7 @@
             display: inline-block;
             opacity: 0;
             transition: opacity 0.3s;
-            display: none; /* 直接隐藏，不再使用 */
+            display: none;
         }
         .input-area {
             margin: 8px 0;
@@ -367,7 +368,7 @@
             </div>
             <div class="control-item">
                 <label>速度(秒)</label>
-                <input type="number" id="speed" value="1.5" step="0.1" min="0.1" max="2.0">
+                <input type="number" id="speed" value="1.5" step="0.1" min="0.1" max="5.0">
             </div>
             <div class="control-item">
                 <label>重复次数</label>
@@ -380,13 +381,13 @@
             <div class="control-item select-item">
                 <label>相邻音程</label>
                 <select id="intervalLimit">
-                    <option value="7">7度</option>
-                    <option value="0">无限制</option>
+                    <option value="5">5度</option>
                     <option value="3">3度</option>
                     <option value="4">4度</option>
-                    <option value="5">5度</option>
                     <option value="6">6度</option>
+					<option value="7">7度</option>
                     <option value="8">8度</option>
+					<option value="0">无限制</option>
                 </select>
             </div>
             <div class="control-item select-item sound-select">
@@ -603,6 +604,7 @@
             });
         }
 
+        // ---------- 改进的播放函数：支持根据速度调整时长 ----------
         function playNoteByName(noteName, duration = 0.7) {
             if (soundMode === 'synthesized' || sampleLoadFailed) {
                 const freq = getFreqFromNoteName(noteName);
@@ -675,7 +677,7 @@
         let trainingMode = 'melody';
         let currentMelody = [];
         let currentNoteNames = [];
-        let currentReferenceNote = ''; // 音程模式下的参考音
+        let currentReferenceNote = '';
         let isPlaying = false;
         let timeoutIds = [];
         let repeatCountTotal = 1;
@@ -816,11 +818,7 @@
 
         function updateUserInputDisplay() {
             if (userInputNotes.length === 0) {
-                if (trainingMode === 'interval') {
-                    userInputDisplay.textContent = '🎹 点击下方键盘输入';
-                } else {
-                    userInputDisplay.textContent = '🎹 点击下方键盘输入';
-                }
+                userInputDisplay.textContent = '🎹 点击下方键盘输入';
             } else {
                 userInputDisplay.textContent = userInputNotes.join('  ');
             }
@@ -833,12 +831,9 @@
             document.querySelectorAll('.key.correct, .key.wrong').forEach(k => k.classList.remove('correct', 'wrong'));
         }
 
-        // ---- 修改答案显示：只显示在上方大号区域，下方小号区域清空隐藏 ----
         function revealAnswer() {
             if (currentNoteNames.length === 0) { alert('请先生成一个题目！'); return; }
-            // 只在大号区域显示答案
             noteDisplay.innerHTML = currentNoteNames.map(n => `<span class="highlight">${n}</span>`).join(' ');
-            // 清空并隐藏小号区域
             answerDisplay.textContent = '';
             answerDisplay.classList.remove('show');
         }
@@ -880,7 +875,7 @@
                         targetKey.classList.add(isCorrect ? 'correct' : 'wrong');
                     }
                 });
-                revealAnswer(); // 显示答案（两个音）
+                revealAnswer();
                 if (allCorrect) {
                     statusBar.textContent = '🎉 完全正确！即将自动进入下一题...';
                     setTimeout(() => { nextQuestion(); }, 1200);
@@ -888,7 +883,6 @@
                     statusBar.textContent = '❌ 有误，请对照答案（绿色=正确，红色=错误）';
                 }
             } else {
-                // 旋律模式
                 const minLen = Math.min(userInputNotes.length, currentNoteNames.length);
                 for (let i = 0; i < minLen; i++) {
                     const userNote = userInputNotes[i];
@@ -898,7 +892,7 @@
                     keyElements.forEach(k => { if (k.dataset.note === userNote) targetKey = k; });
                     if (targetKey) targetKey.classList.add(isCorrect ? 'correct' : 'wrong');
                 }
-                revealAnswer(); // 显示答案（所有音）
+                revealAnswer();
                 const isFullyCorrect = (userInputNotes.length === currentNoteNames.length &&
                     userInputNotes.every((v, i) => v === currentNoteNames[i]));
                 if (isFullyCorrect) {
@@ -910,31 +904,37 @@
             }
         }
 
-        // ---------- 播放函数 ----------
+        // ---------- 播放函数（音程听辨已按速度控制时长） ----------
         function playIntervalSequence(timesLeft, speed) {
             if (!isPlaying || timesLeft <= 0) {
                 if (timesLeft <= 0) { statusBar.textContent = '播放完成';
                     isPlaying = false; }
                 return;
             }
+            // 参考音时长 = speed * 0.5，双音时长 = speed * 0.7，间隔 = speed * 0.4
+            const refDuration = Math.max(0.2, speed );
+            const chordDuration = Math.max(0.3, speed );
+            const gap = Math.max(0.1, speed * 0);
+
             // 播放参考音
             const refTimeout = setTimeout(() => {
                 if (!isPlaying) return;
-                playNoteByName(currentReferenceNote, 0.5);
+                playNoteByName(currentReferenceNote, refDuration);
             }, 0);
             timeoutIds.push(refTimeout);
 
             // 延迟后播放双音
-            const intervalDelay = 600 * speed;
+            const intervalDelay = (refDuration + gap) * 1000;
             const intervalTimeout = setTimeout(() => {
                 if (!isPlaying) return;
-                playNoteByName(currentNoteNames[0], 0.8);
-                playNoteByName(currentNoteNames[1], 0.8);
+                playNoteByName(currentNoteNames[0], chordDuration);
+                playNoteByName(currentNoteNames[1], chordDuration);
                 statusBar.textContent = `音程播放 (${currentRepeatIndex + 1}/${repeatCountTotal})`;
             }, intervalDelay);
             timeoutIds.push(intervalTimeout);
 
-            const totalDuration = (0.5 + 0.6 + 0.8 + 0.2) * 1000 * speed;
+            // 总循环间隔 = 参考音 + 间隙 + 双音 + 额外缓冲
+            const totalDuration = (refDuration + gap + chordDuration + 0.2) * 1000;
             const nextTimeout = setTimeout(() => {
                 if (!isPlaying) return;
                 currentRepeatIndex++;
@@ -971,10 +971,18 @@
             if (currentRepeatIndex === 0) statusBar.textContent = `播放中 (1/${repeatCountTotal})`;
         }
 
+        // ---------- 强制停止所有音 ----------
         function stopPlayback() {
             isPlaying = false;
+            // 清除所有定时器
             timeoutIds.forEach(id => clearTimeout(id));
             timeoutIds = [];
+            // 强制停止所有 Howl 实例
+            for (let key in soundCache) {
+                if (soundCache[key] && typeof soundCache[key].stop === 'function') {
+                    soundCache[key].stop();
+                }
+            }
             statusBar.textContent = '已停止';
         }
 
@@ -1063,7 +1071,6 @@
                     [refNote, ...currentNoteNames].forEach(n => preloadSingleNote(n));
                 }
 
-                // 播放时显示提示
                 answerDisplay.textContent = '';
                 answerDisplay.classList.remove('show');
                 clearUserInput();
@@ -1143,7 +1150,6 @@
                 playIntervalSequence(repeatCount, speed);
                 return;
             }
-            // 旋律模式
             if (currentMelody.length === 0) { generateAndPlay(); return; }
             stopPlayback();
             const repeatCount = parseInt(repeatCountInput.value) || 1;
@@ -1186,9 +1192,9 @@
             trainingMode = 'melody';
 
             // ---- 设置默认值 ----
-            rootSelect.value = 'A';          // 起始音改为 A
-            lowNoteSelect.value = 'G2';      // 最低音改为 G2
-            highNoteSelect.value = 'D4';     // 最高音改为 D4
+            rootSelect.value = 'A';
+            lowNoteSelect.value = 'G2';
+            highNoteSelect.value = 'D4';
         });
     </script>
 </body>
