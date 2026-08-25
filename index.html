@@ -906,46 +906,45 @@
 
         // ---------- 播放函数（音程听辨已按速度控制时长） ----------
         function playIntervalSequence(timesLeft, speed) {
-            if (!isPlaying || timesLeft <= 0) {
-                if (timesLeft <= 0) { statusBar.textContent = '播放完成';
-                    isPlaying = false; }
-                return;
-            }
-            // 参考音时长 = speed * 0.5，双音时长 = speed * 0.7，间隔 = speed * 0.4
-            const refDuration = Math.max(0.2, speed );
-            const chordDuration = Math.max(0.3, speed );
-            const gap = Math.max(0.1, speed * 0);
+    if (!isPlaying || timesLeft <= 0) {
+        if (timesLeft <= 0) { statusBar.textContent = '播放完成'; isPlaying = false; }
+        return;
+    }
+    // ---- 修改点：参考音固定 1.5 秒，双音时长由 speed 控制，间隔固定 0.3 秒 ----
+    const refDuration = 1.5;                       // 固定 1.5 秒
+    const chordDuration = Math.max(0.3, speed);   // 双音时长随速度变化，最小 0.3 秒
+    const gap = 0.3;                              // 参考音与双音之间的间隔固定 0.3 秒
 
-            // 播放参考音
-            const refTimeout = setTimeout(() => {
-                if (!isPlaying) return;
-                playNoteByName(currentReferenceNote, refDuration);
-            }, 0);
-            timeoutIds.push(refTimeout);
+    // 播放参考音
+    const refTimeout = setTimeout(() => {
+        if (!isPlaying) return;
+        playNoteByName(currentReferenceNote, refDuration);
+    }, 0);
+    timeoutIds.push(refTimeout);
 
-            // 延迟后播放双音
-            const intervalDelay = (refDuration + gap) * 1000;
-            const intervalTimeout = setTimeout(() => {
-                if (!isPlaying) return;
-                playNoteByName(currentNoteNames[0], chordDuration);
-                playNoteByName(currentNoteNames[1], chordDuration);
-                statusBar.textContent = `音程播放 (${currentRepeatIndex + 1}/${repeatCountTotal})`;
-            }, intervalDelay);
-            timeoutIds.push(intervalTimeout);
+    // 延迟后播放双音
+    const intervalDelay = (refDuration + gap) * 1000;
+    const intervalTimeout = setTimeout(() => {
+        if (!isPlaying) return;
+        playNoteByName(currentNoteNames[0], chordDuration);
+        playNoteByName(currentNoteNames[1], chordDuration);
+        statusBar.textContent = `音程播放 (${currentRepeatIndex + 1}/${repeatCountTotal})`;
+    }, intervalDelay);
+    timeoutIds.push(intervalTimeout);
 
-            // 总循环间隔 = 参考音 + 间隙 + 双音 + 额外缓冲
-            const totalDuration = (refDuration + gap + chordDuration + 0.2) * 1000;
-            const nextTimeout = setTimeout(() => {
-                if (!isPlaying) return;
-                currentRepeatIndex++;
-                playIntervalSequence(timesLeft - 1, speed);
-            }, totalDuration);
-            timeoutIds.push(nextTimeout);
+    // 总循环间隔 = 参考音 + 间隙 + 双音 + 额外缓冲 0.2 秒
+    const totalDuration = (refDuration + gap + chordDuration + 0.2) * 1000;
+    const nextTimeout = setTimeout(() => {
+        if (!isPlaying) return;
+        currentRepeatIndex++;
+        playIntervalSequence(timesLeft - 1, speed);
+    }, totalDuration);
+    timeoutIds.push(nextTimeout);
 
-            if (currentRepeatIndex === 0) {
-                statusBar.textContent = `音程播放 (1/${repeatCountTotal})`;
-            }
-        }
+    if (currentRepeatIndex === 0) {
+        statusBar.textContent = `音程播放 (1/${repeatCountTotal})`;
+    }
+}
 
         function playSequence(timesLeft, speed) {
             if (!isPlaying || timesLeft <= 0) {
