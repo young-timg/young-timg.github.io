@@ -4,14 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>练耳训练</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <style>
-        /* 样式保持不变，省略以节省篇幅，实际请保留原样式 */
-        * {
-            box-sizing: border-box;
-            font-family: system-ui, sans-serif;
-        }
+        * { box-sizing: border-box; font-family: system-ui, sans-serif; }
         body {
             background: #f0ede8;
             display: flex;
@@ -30,16 +25,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-        h1 {
-            font-size: 1.7rem;
-            margin: 0 0 4px;
-            color: #2c3e50;
-        }
-        .subtitle {
-            color: #7f8c8d;
-            margin-bottom: 18px;
-            font-size: 0.9rem;
-        }
+        h1 { font-size: 1.7rem; margin: 0 0 4px; color: #2c3e50; }
         .control-group {
             display: flex;
             flex-wrap: wrap;
@@ -47,298 +33,141 @@
             gap: 8px 14px;
             margin-bottom: 14px;
         }
-        .control-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .control-item { display: flex; flex-direction: column; align-items: center; }
         .control-item label {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #34495e;
-            margin-bottom: 1px;
+            font-size: 0.7rem; font-weight: 600; color: #34495e; margin-bottom: 1px;
         }
         .control-item select,
         .control-item input {
-            padding: 4px 6px;
-            border-radius: 14px;
-            border: 1px solid #ddd;
-            background: #fafafa;
-            font-size: 0.85rem;
-            width: 72px;
-            text-align: center;
-            outline: none;
+            padding: 4px 6px; border-radius: 14px; border: 1px solid #ddd;
+            background: #fafafa; font-size: 0.85rem; width: 72px;
+            text-align: center; outline: none;
         }
-        .control-item input[type="number"] {
-            width: 60px;
-        }
-        .control-item.select-item select {
-            width: 80px;
-        }
+        .control-item input[type="number"] { width: 60px; }
+        .control-item.select-item select { width: 80px; }
         .control-item.checkbox-item {
-            flex-direction: row;
-            gap: 5px;
-            align-items: center;
+            flex-direction: row; gap: 5px; align-items: center;
         }
-        .control-item.checkbox-item label {
-            font-weight: 400;
-            cursor: pointer;
-        }
-        .control-item.checkbox-item input {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
+        .control-item.checkbox-item label { font-weight: 400; cursor: pointer; }
+        .control-item.checkbox-item input { width: 16px; height: 16px; cursor: pointer; }
         .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            margin: 14px 0 10px;
+            display: flex; flex-wrap: wrap; gap: 8px;
+            justify-content: center; margin: 14px 0 10px;
         }
         .btn {
-            background: #6c5ce7;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.2s;
-            min-width: 60px;
+            background: #6c5ce7; border: none; color: white;
+            padding: 8px 16px; border-radius: 30px;
+            font-size: 0.9rem; font-weight: 500; cursor: pointer;
+            transition: 0.2s; min-width: 60px;
             box-shadow: 0 3px 6px rgba(108, 92, 231, 0.3);
         }
-        .btn:hover {
-            background: #5a4bd1;
-            transform: scale(1.02);
-        }
-        .btn:active {
-            transform: scale(0.96);
-        }
-        .btn-secondary {
-            background: #ecf0f1;
-            color: #2c3e50;
-            box-shadow: none;
-        }
-        .btn-secondary:hover {
-            background: #dde1e3;
-        }
-        .btn-success {
-            background: #27ae60;
-            box-shadow: 0 3px 6px rgba(39, 174, 96, 0.3);
-        }
-        .btn-success:hover {
-            background: #1e8449;
-        }
-        .btn-danger {
-            background: #e74c3c;
-            box-shadow: 0 3px 6px rgba(231, 76, 60, 0.3);
-        }
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-        .btn-primary {
-            background: #3498db;
-            box-shadow: 0 3px 6px rgba(52, 152, 219, 0.3);
-        }
-        .btn-primary:hover {
-            background: #2980b9;
-        }
-        .btn-warning {
-            background: #f39c12;
-            box-shadow: 0 3px 6px rgba(243, 156, 18, 0.3);
-        }
-        .btn-warning:hover {
-            background: #d68910;
-        }
+        .btn:hover { background: #5a4bd1; transform: scale(1.02); }
+        .btn:active { transform: scale(0.96); }
+        .btn-secondary { background: #ecf0f1; color: #2c3e50; box-shadow: none; }
+        .btn-secondary:hover { background: #dde1e3; }
+        .btn-success { background: #27ae60; box-shadow: 0 3px 6px rgba(39, 174, 96, 0.3); }
+        .btn-success:hover { background: #1e8449; }
+        .btn-danger { background: #e74c3c; box-shadow: 0 3px 6px rgba(231, 76, 60, 0.3); }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-primary { background: #3498db; box-shadow: 0 3px 6px rgba(52, 152, 219, 0.3); }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-warning { background: #f39c12; box-shadow: 0 3px 6px rgba(243, 156, 18, 0.3); }
+        .btn-warning:hover { background: #d68910; }
         .display-area {
-            background: #f8f7fc;
-            border-radius: 20px;
-            padding: 14px;
-            margin: 12px 0;
-            min-height: 60px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            background: #f8f7fc; border-radius: 20px; padding: 14px;
+            margin: 12px 0; min-height: 60px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
         }
         .note-display {
-            font-size: 2rem;
-            font-weight: 600;
-            letter-spacing: 3px;
-            color: #2c3e50;
+            font-size: 2rem; font-weight: 600; letter-spacing: 3px; color: #2c3e50;
         }
-        .note-display .highlight {
-            color: #6c5ce7;
-        }
-        .answer-area {
-            margin-top: 6px;
-            font-size: 1rem;
-            background: #e8e6f0;
-            padding: 4px 14px;
-            border-radius: 30px;
-            display: inline-block;
-            opacity: 0;
-            transition: opacity 0.3s;
-            display: none;
-        }
+        .note-display .highlight { color: #6c5ce7; }
+        .answer-area { display: none; }
         .input-area {
-            margin: 8px 0;
-            font-size: 1.2rem;
-            min-height: 32px;
-            background: #f0f0f5;
-            border-radius: 30px;
-            padding: 4px 16px;
-            display: inline-block;
+            margin: 8px 0; font-size: 1.2rem; min-height: 32px;
+            background: #f0f0f5; border-radius: 30px;
+            padding: 4px 16px; display: inline-block;
         }
         .piano-container {
-            margin: 12px 0 8px;
-            overflow-x: auto;
-            padding: 4px 0;
-            background: #eae8e3;
-            border-radius: 12px;
+            margin: 12px 0 8px; overflow-x: auto; padding: 4px 0;
+            background: #eae8e3; border-radius: 12px;
         }
         .piano-keyboard {
-            display: flex;
-            justify-content: center;
-            position: relative;
-            height: 120px;
-            min-width: fit-content;
-            padding: 0 4px;
+            display: flex; justify-content: center; position: relative;
+            height: 120px; min-width: fit-content; padding: 0 4px;
         }
-        .key {
-            position: relative;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.1s;
-        }
+        .key { position: relative; cursor: pointer; user-select: none; transition: background 0.1s; }
         .key.white {
-            width: 36px;
-            height: 120px;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 0 0 6px 6px;
-            z-index: 1;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding-bottom: 8px;
-            font-size: 0.6rem;
-            color: #555;
+            width: 36px; height: 120px; background: white;
+            border: 1px solid #ccc; border-radius: 0 0 6px 6px; z-index: 1;
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 8px; font-size: 0.6rem; color: #555;
         }
         .key.black {
-            width: 24px;
-            height: 72px;
-            background: #1a1a1a;
-            border: 1px solid #111;
-            border-radius: 0 0 4px 4px;
-            z-index: 2;
-            margin-left: -12px;
-            margin-right: -12px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding-bottom: 6px;
-            font-size: 0.5rem;
-            color: #ccc;
+            width: 24px; height: 72px; background: #1a1a1a;
+            border: 1px solid #111; border-radius: 0 0 4px 4px; z-index: 2;
+            margin-left: -12px; margin-right: -12px;
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 6px; font-size: 0.5rem; color: #ccc;
         }
-        .key:active {
-            filter: brightness(0.85);
-        }
-        .key.white.selected {
-            background: #b8a9f0;
-        }
-        .key.black.selected {
-            background: #555;
-        }
-        .key.white.correct {
-            background: #a5d6a7;
-        }
-        .key.black.correct {
-            background: #2e7d32;
-        }
-        .key.white.wrong {
-            background: #ef9a9a;
-        }
-        .key.black.wrong {
-            background: #b71c1c;
-        }
-        .status-bar {
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            min-height: 20px;
-            margin-top: 4px;
-        }
-        .footer {
-            margin-top: 10px;
-            font-size: 0.75rem;
-            color: #95a5a6;
-        }
+        .key:active { filter: brightness(0.85); }
+        .key.white.selected { background: #b8a9f0; }
+        .key.black.selected { background: #555; }
+        .key.white.correct { background: #a5d6a7; }
+        .key.black.correct { background: #2e7d32; }
+        .key.white.wrong { background: #ef9a9a; }
+        .key.black.wrong { background: #b71c1c; }
+        .status-bar { font-size: 0.8rem; color: #7f8c8d; min-height: 20px; margin-top: 4px; }
+        .footer { margin-top: 10px; font-size: 0.75rem; color: #95a5a6; }
         @media (max-width: 650px) {
-            .key.white {
-                width: 28px;
-                height: 100px;
-            }
-            .key.black {
-                width: 20px;
-                height: 60px;
-                margin-left: -10px;
-                margin-right: -10px;
-            }
-            .piano-keyboard {
-                height: 100px;
-            }
+            .key.white { width: 28px; height: 100px; }
+            .key.black { width: 20px; height: 60px; margin-left: -10px; margin-right: -10px; }
+            .piano-keyboard { height: 100px; }
         }
-        .error-tip {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-top: 4px;
-        }
+        .error-tip { color: #e74c3c; font-weight: bold; margin-top: 4px; }
         .sound-indicator {
-            display: inline-block;
-            font-size: 0.7rem;
-            padding: 2px 12px;
-            border-radius: 20px;
-            margin-left: 6px;
-            font-weight: 500;
+            display: inline-block; font-size: 0.7rem; padding: 2px 12px;
+            border-radius: 20px; margin-left: 6px; font-weight: 500;
         }
-        .sound-indicator.sample {
-            background: #d4edda;
-            color: #155724;
+        .sound-indicator.sample { background: #d4edda; color: #155724; }
+        .sound-indicator.synthesized { background: #fff3cd; color: #856404; }
+        .sound-indicator.fallback { background: #f8d7da; color: #721c24; }
+        .sound-indicator.electric { background: #cce5ff; color: #004085; }
+        .control-item.select-item.sound-select select { width: 106px; }
+        #loadingIndicator {
+            font-size: 0.75rem; color: #3498db; margin-top: 2px; display: none;
         }
-        .sound-indicator.synthesized {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .sound-indicator.fallback {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .sound-indicator.electric {
-            background: #cce5ff;
-            color: #004085;
-        }
-        .control-item.select-item.sound-select select {
-            width: 106px;
-        }
-        .sound-status-row {
-            display: flex;
+        .control-item.select-item.mode-select select { width: 110px; }
+        /* 和弦类型选择行 */
+        .chord-type-group {
+            display: none;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            padding: 6px 12px;
+            background: #f8f7fc;
+            border-radius: 20px;
+        }
+        .chord-type-group.show { display: flex; }
+        .chord-type-group label {
             font-size: 0.8rem;
-            color: #555;
-            margin-top: 2px;
+            font-weight: 600;
+            color: #34495e;
+            margin-right: 4px;
         }
-        #loadingIndicator {
-            font-size: 0.75rem;
-            color: #3498db;
-            margin-top: 2px;
-            display: none;
+        .chord-type-group .chk-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: #2c3e50;
+            cursor: pointer;
         }
-        .control-item.select-item.mode-select select {
-            width: 100px;
+        .chord-type-group input[type="checkbox"] {
+            width: 15px; height: 15px; cursor: pointer;
         }
     </style>
 </head>
@@ -352,15 +181,24 @@
                 <select id="modeSelect">
                     <option value="melody">旋律听辨</option>
                     <option value="interval">音程听辨</option>
+                    <option value="chord">三和弦听辨</option>
+                </select>
+            </div>
+            <div class="control-item select-item sound-select">
+                <label>音色</label>
+                <select id="soundType">
+                    <option value="acoustic_grand_piano">原声钢琴</option>
+                    <option value="electric_grand_piano">电钢琴</option>
+                    <option value="electric_piano_1">电子琴</option>
+                    <option value="acoustic_guitar_steel">原声吉他</option>
+                    <option value="electric_guitar_jazz">爵士吉他</option>
+                    <option value="violin">小提琴</option>
+                    <option value="synthesized">合成音色</option>
                 </select>
             </div>
             <div class="control-item">
                 <label>起始音</label>
                 <select id="rootNote"></select>
-            </div>
-            <div class="control-item">
-                <label>八度</label>
-                <input type="number" id="octave" value="3" min="2" max="6">
             </div>
             <div class="control-item">
                 <label>音符数</label>
@@ -385,23 +223,20 @@
                     <option value="3">3度</option>
                     <option value="4">4度</option>
                     <option value="6">6度</option>
-					<option value="7">7度</option>
+                    <option value="7">7度</option>
                     <option value="8">8度</option>
-					<option value="0">无限制</option>
+                    <option value="0">无限制</option>
                 </select>
             </div>
-            <div class="control-item select-item sound-select">
-                <label>音色</label>
-                <select id="soundType">
-                    <option value="acoustic_grand_piano">原声钢琴</option>
-                    <option value="electric_grand_piano">电钢琴</option>
-                    <option value="electric_piano_1">电子琴</option>
-                    <option value="acoustic_guitar_steel">原声吉他</option>
-                    <option value="electric_guitar_jazz">爵士吉他</option>
-                    <option value="violin">小提琴</option>
-                    <option value="synthesized">合成音色</option>
-                </select>
-            </div>
+        </div>
+
+        <!-- 和弦类型选择（仅三和弦模式下显示） -->
+        <div class="chord-type-group" id="chordTypeGroup">
+            <label>和弦类型：</label>
+            <label class="chk-item"><input type="checkbox" id="chkMajor" checked> 大三和弦</label>
+            <label class="chk-item"><input type="checkbox" id="chkMinor" checked> 小三和弦</label>
+            <label class="chk-item"><input type="checkbox" id="chkDim"> 减三和弦</label>
+            <label class="chk-item"><input type="checkbox" id="chkAug"> 增三和弦</label>
         </div>
 
         <div class="control-group">
@@ -452,7 +287,6 @@
         const soundCache = {};
         let soundMode = 'acoustic_grand_piano';
         let sampleLoadFailed = false;
-        let isLoadingComplete = false;
 
         const soundFontLabels = {
             'acoustic_grand_piano': '原声钢琴',
@@ -464,57 +298,41 @@
             'synthesized': '合成音色'
         };
 
-        // 合成音色
         function playSynthesizedNote(freq, duration = 0.8, volume = 0.6) {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             let ctx = new AudioContext();
             const now = ctx.currentTime;
             const osc1 = ctx.createOscillator();
             const gain1 = ctx.createGain();
-            osc1.type = 'sawtooth';
-            osc1.frequency.value = freq;
+            osc1.type = 'sawtooth'; osc1.frequency.value = freq;
             const osc2 = ctx.createOscillator();
             const gain2 = ctx.createGain();
-            osc2.type = 'square';
-            osc2.frequency.value = freq;
+            osc2.type = 'square'; osc2.frequency.value = freq;
             const osc3 = ctx.createOscillator();
             const gain3 = ctx.createGain();
-            osc3.type = 'triangle';
-            osc3.frequency.value = freq * 2;
+            osc3.type = 'triangle'; osc3.frequency.value = freq * 2;
             gain3.gain.value = 0.1 * volume;
             const osc4 = ctx.createOscillator();
             const gain4 = ctx.createGain();
-            osc4.type = 'sawtooth';
-            osc4.frequency.value = freq * 3;
+            osc4.type = 'sawtooth'; osc4.frequency.value = freq * 3;
             gain4.gain.value = 0.04 * volume;
             const masterGain = ctx.createGain();
             masterGain.gain.setValueAtTime(0, now);
-            const attackTime = 0.005,
-                decay1Time = 0.1,
-                decay2Time = duration * 0.5;
+            const attackTime = 0.005, decay1Time = 0.1, decay2Time = duration * 0.5;
             const sustainLevel = 0.25 * volume;
             masterGain.gain.linearRampToValueAtTime(volume * 0.8, now + attackTime);
             masterGain.gain.exponentialRampToValueAtTime(sustainLevel, now + decay1Time);
             masterGain.gain.exponentialRampToValueAtTime(sustainLevel * 0.5, now + decay1Time + decay2Time);
             masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
             const filter = ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 5000;
+            filter.type = 'lowpass'; filter.frequency.value = 5000;
             filter.frequency.exponentialRampToValueAtTime(1500, now + duration * 0.7);
-            osc1.connect(gain1);
-            gain1.connect(filter);
-            osc2.connect(gain2);
-            gain2.connect(filter);
-            osc3.connect(gain3);
-            gain3.connect(filter);
-            osc4.connect(gain4);
-            gain4.connect(filter);
-            filter.connect(masterGain);
-            masterGain.connect(ctx.destination);
-            osc1.start(now);
-            osc2.start(now);
-            osc3.start(now);
-            osc4.start(now);
+            osc1.connect(gain1); gain1.connect(filter);
+            osc2.connect(gain2); gain2.connect(filter);
+            osc3.connect(gain3); gain3.connect(filter);
+            osc4.connect(gain4); gain4.connect(filter);
+            filter.connect(masterGain); masterGain.connect(ctx.destination);
+            osc1.start(now); osc2.start(now); osc3.start(now); osc4.start(now);
             osc1.stop(now + duration + 0.2);
             osc2.stop(now + duration + 0.2);
             osc3.stop(now + duration + 0.2);
@@ -527,8 +345,8 @@
             if (!match) return null;
             const name = match[1];
             const oct = parseInt(match[2]);
-            const map = { 'C': 'C', 'C#': 'Db', 'D': 'D', 'D#': 'Eb', 'E': 'E', 'F': 'F', 'F#': 'Gb', 'G': 'G', 'G#': 'Ab',
-                'A': 'A', 'A#': 'Bb', 'B': 'B' };
+            const map = { 'C': 'C', 'C#': 'Db', 'D': 'D', 'D#': 'Eb', 'E': 'E', 'F': 'F',
+                'F#': 'Gb', 'G': 'G', 'G#': 'Ab', 'A': 'A', 'A#': 'Bb', 'B': 'B' };
             const fileName = map[name];
             if (!fileName) return null;
             const externalOct = oct + 1;
@@ -537,8 +355,8 @@
         }
 
         function getFreqFromNoteName(noteWithOct) {
-            const noteFreq = { 'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13, 'E': 329.63, 'F': 349.23, 'F#': 369.99,
-                'G': 392.00, 'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88 };
+            const noteFreq = { 'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13, 'E': 329.63, 'F': 349.23,
+                'F#': 369.99, 'G': 392.00, 'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88 };
             const match = noteWithOct.match(/^([A-G]#?)(\d)$/);
             if (!match) return null;
             const name = match[1];
@@ -548,16 +366,34 @@
             return base * Math.pow(2, oct - 3);
         }
 
+        // 音名 → MIDI 编号（C4 = 60）
+        function noteNameToMidi(noteName) {
+            const match = noteName.match(/^([A-G]#?)(\d)$/);
+            if (!match) return null;
+            const name = match[1];
+            const oct = parseInt(match[2]);
+            const semiMap = { 'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5,
+                'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11 };
+            const semi = semiMap[name];
+            if (semi === undefined) return null;
+            return (oct + 1) * 12 + semi;
+        }
+
+        // MIDI 编号 → 音名
+        function midiToNoteName(midi) {
+            if (midi < 0 || midi > 127) return null;
+            const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const oct = Math.floor(midi / 12) - 1;
+            const semi = midi % 12;
+            return names[semi] + oct;
+        }
+
         function preloadSingleNote(noteName) {
             if (sampleLoadFailed || soundMode === 'synthesized') return;
             const url = getNoteUrl(noteName);
-            if (!url) return;
-            if (soundCache[noteName]) return;
+            if (!url || soundCache[noteName]) return;
             const sound = new Howl({
-                src: [url],
-                autoplay: false,
-                html5: true,
-                volume: 0.8,
+                src: [url], autoplay: false, html5: true, volume: 0.8,
                 onloaderror: function(e) {
                     console.warn('预加载失败:', noteName, e);
                     sampleLoadFailed = true;
@@ -576,10 +412,7 @@
             const allNotes = [];
             const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
             for (let oct = 2; oct <= 4; oct++) {
-                for (let name of noteNames) {
-                    const full = name + oct;
-                    allNotes.push(full);
-                }
+                for (let name of noteNames) allNotes.push(name + oct);
             }
             const startIdx = allNotes.indexOf('E2');
             const endIdx = allNotes.indexOf('E4');
@@ -596,7 +429,6 @@
                     preloadSingleNote(note);
                     loadedCount++;
                     if (loadedCount === total) {
-                        isLoadingComplete = true;
                         document.getElementById('loadingIndicator').style.display = 'none';
                         statusBar.textContent = `✅ ${label} 预加载完成，可流畅播放`;
                     }
@@ -604,7 +436,6 @@
             });
         }
 
-        // ---------- 改进的播放函数：支持根据速度调整时长 ----------
         function playNoteByName(noteName, duration = 0.7) {
             if (soundMode === 'synthesized' || sampleLoadFailed) {
                 const freq = getFreqFromNoteName(noteName);
@@ -617,26 +448,18 @@
             }
             const freq = getFreqFromNoteName(noteName);
             if (freq) playSynthesizedNote(freq, duration);
-            if (soundMode !== 'synthesized' && !sampleLoadFailed) {
-                setTimeout(() => {
-                    preloadSingleNote(noteName);
-                }, 50);
-            }
+            setTimeout(() => { preloadSingleNote(noteName); }, 50);
         }
 
         function switchSoundType(type) {
             stopPlayback();
             for (let key in soundCache) {
-                if (soundCache[key] && typeof soundCache[key].unload === 'function') {
-                    soundCache[key].unload();
-                }
+                if (soundCache[key] && typeof soundCache[key].unload === 'function') soundCache[key].unload();
                 delete soundCache[key];
             }
             sampleLoadFailed = false;
-            isLoadingComplete = false;
             document.getElementById('errorTip').style.display = 'none';
             document.getElementById('errorTip').textContent = '';
-
             soundMode = type;
 
             if (type === 'synthesized') {
@@ -647,9 +470,7 @@
                 const label = soundFontLabels[type] || '音色';
                 updateSoundStatusBadge(type, false);
                 statusBar.textContent = `已切换为 ${label}，正在预加载…`;
-                setTimeout(() => {
-                    preloadAllKeyboardNotes();
-                }, 100);
+                setTimeout(() => { preloadAllKeyboardNotes(); }, 100);
             }
         }
 
@@ -686,7 +507,6 @@
 
         const modeSelect = document.getElementById('modeSelect');
         const rootSelect = document.getElementById('rootNote');
-        const octaveInput = document.getElementById('octave');
         const noteCountInput = document.getElementById('noteCount');
         const speedInput = document.getElementById('speed');
         const repeatCountInput = document.getElementById('repeatCount');
@@ -708,76 +528,94 @@
         const inputKeyboard = document.getElementById('inputKeyboard');
         const soundTypeSelect = document.getElementById('soundType');
 
+        // 和弦类型复选框
+        const chordTypeGroup = document.getElementById('chordTypeGroup');
+        const chkMajor = document.getElementById('chkMajor');
+        const chkMinor = document.getElementById('chkMinor');
+        const chkDim = document.getElementById('chkDim');
+        const chkAug = document.getElementById('chkAug');
+
+        // 模式切换
         modeSelect.addEventListener('change', function() {
             trainingMode = this.value;
             clearUserInput();
             stopPlayback();
             noteDisplay.textContent = '— — —';
-            answerDisplay.textContent = '';
-            answerDisplay.classList.remove('show');
-            if (trainingMode === 'interval') {
-                statusBar.textContent = '音程听辨模式 – 点击「播放」听取参考音和两个音';
+
+            // 显示/隐藏和弦类型选择
+            if (trainingMode === 'chord') {
+                chordTypeGroup.classList.add('show');
+                statusBar.textContent = '三和弦听辨模式 – 点击「播放」听取参考音和三和弦';
             } else {
-                statusBar.textContent = '旋律听辨模式 – 点击「播放」生成旋律';
+                chordTypeGroup.classList.remove('show');
+                if (trainingMode === 'interval') {
+                    statusBar.textContent = '音程听辨模式 – 点击「播放」听取参考音和两个音';
+                } else {
+                    statusBar.textContent = '旋律听辨模式 – 点击「播放」生成旋律';
+                }
             }
         });
 
-        soundTypeSelect.addEventListener('change', function() {
-            switchSoundType(this.value);
-        });
+        soundTypeSelect.addEventListener('change', function() { switchSoundType(this.value); });
+
+        // 生成 E2~E4 范围音名列表
+        function getNoteListE2toE4(includeChromatic) {
+            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const whiteNoteNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+            const names = includeChromatic ? noteNames : whiteNoteNames;
+            const result = [];
+            for (let i = names.indexOf('E'); i < names.length; i++) result.push(names[i] + '2');
+            for (let i = 0; i < names.length; i++) result.push(names[i] + '3');
+            for (let i = 0; i < names.length; i++) {
+                result.push(names[i] + '4');
+                if (names[i] === 'E') break;
+            }
+            return result;
+        }
 
         function populateRootSelect(includeChromatic) {
             const currentValue = rootSelect.value;
             rootSelect.innerHTML = '';
-            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-            const whiteNoteNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-            const names = includeChromatic ? noteNames : whiteNoteNames;
-            names.forEach(n => {
+            const vals = getNoteListE2toE4(includeChromatic);
+            vals.forEach(n => {
                 const opt = document.createElement('option');
                 opt.value = n;
                 opt.textContent = n;
                 rootSelect.appendChild(opt);
             });
-            if (names.includes(currentValue)) rootSelect.value = currentValue;
-            else rootSelect.value = names[0];
+            if (vals.includes(currentValue)) rootSelect.value = currentValue;
+            else rootSelect.value = vals.includes('A2') ? 'A2' : vals[0];
         }
         populateRootSelect(false);
         includeChromatic.addEventListener('change', function() { populateRootSelect(this.checked); });
 
         function fillNoteRangeSelect(selectEl, defaultVal) {
             selectEl.innerHTML = '';
-            const octaves = [2, 3, 4, 5, 6];
-            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-            octaves.forEach(oct => {
-                noteNames.forEach(n => {
-                    const opt = document.createElement('option');
-                    const val = n + oct;
-                    opt.value = val;
-                    opt.textContent = val;
-                    selectEl.appendChild(opt);
-                });
+            const vals = getNoteListE2toE4(true);
+            vals.forEach(val => {
+                const opt = document.createElement('option');
+                opt.value = val;
+                opt.textContent = val;
+                selectEl.appendChild(opt);
             });
-            if (defaultVal) selectEl.value = defaultVal;
+            if (defaultVal && vals.includes(defaultVal)) selectEl.value = defaultVal;
+            else selectEl.value = vals[0];
         }
-        fillNoteRangeSelect(lowNoteSelect, 'F2');
+        fillNoteRangeSelect(lowNoteSelect, 'E2');
         fillNoteRangeSelect(highNoteSelect, 'E4');
 
         function buildInputKeyboard() {
             inputKeyboard.innerHTML = '';
             const allKeys = [];
             const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-            let currentOct = 2,
-                currentIdx = noteNames.indexOf('E');
-            const endOct = 4,
-                endIdx = noteNames.indexOf('E');
+            let currentOct = 2, currentIdx = noteNames.indexOf('E');
+            const endOct = 4, endIdx = noteNames.indexOf('E');
             while (true) {
                 const noteName = noteNames[currentIdx];
-                const fullName = noteName + currentOct;
-                allKeys.push(fullName);
+                allKeys.push(noteName + currentOct);
                 if (currentOct === endOct && currentIdx === endIdx) break;
                 currentIdx++;
-                if (currentIdx === 12) { currentIdx = 0;
-                    currentOct++; }
+                if (currentIdx === 12) { currentIdx = 0; currentOct++; }
             }
             const blackKeys = ['C#', 'D#', 'F#', 'G#', 'A#'];
             allKeys.forEach(full => {
@@ -792,24 +630,19 @@
                     const note = this.dataset.note;
                     playNoteByName(note, 0.6);
                     if (trainingMode === 'interval') {
-                        if (userInputNotes.length >= 2) {
-                            userInputNotes = [];
-                        }
+                        if (userInputNotes.length >= 2) userInputNotes = [];
                         userInputNotes.push(note);
-                        userInputNotes.sort((a, b) => {
-                            const fa = getFreqFromNoteName(a);
-                            const fb = getFreqFromNoteName(b);
-                            return fa - fb;
-                        });
-                        updateUserInputDisplay();
-                        this.classList.add('selected');
-                        setTimeout(() => this.classList.remove('selected'), 200);
+                        userInputNotes.sort((a, b) => getFreqFromNoteName(a) - getFreqFromNoteName(b));
+                    } else if (trainingMode === 'chord') {
+                        if (userInputNotes.length >= 3) userInputNotes = [];
+                        userInputNotes.push(note);
+                        userInputNotes.sort((a, b) => getFreqFromNoteName(a) - getFreqFromNoteName(b));
                     } else {
                         userInputNotes.push(note);
-                        updateUserInputDisplay();
-                        this.classList.add('selected');
-                        setTimeout(() => this.classList.remove('selected'), 200);
                     }
+                    updateUserInputDisplay();
+                    this.classList.add('selected');
+                    setTimeout(() => this.classList.remove('selected'), 200);
                 });
                 inputKeyboard.appendChild(keyDiv);
             });
@@ -817,25 +650,21 @@
         buildInputKeyboard();
 
         function updateUserInputDisplay() {
-            if (userInputNotes.length === 0) {
-                userInputDisplay.textContent = '🎹 点击下方键盘输入';
-            } else {
-                userInputDisplay.textContent = userInputNotes.join('  ');
-            }
+            userInputDisplay.textContent = userInputNotes.length === 0
+                ? '🎹 点击下方键盘输入'
+                : userInputNotes.join('  ');
             document.querySelectorAll('.key.correct, .key.wrong').forEach(k => k.classList.remove('correct', 'wrong'));
         }
 
         function clearUserInput() {
             userInputNotes = [];
             updateUserInputDisplay();
-            document.querySelectorAll('.key.correct, .key.wrong').forEach(k => k.classList.remove('correct', 'wrong'));
         }
 
         function revealAnswer() {
             if (currentNoteNames.length === 0) { alert('请先生成一个题目！'); return; }
             noteDisplay.innerHTML = currentNoteNames.map(n => `<span class="highlight">${n}</span>`).join(' ');
             answerDisplay.textContent = '';
-            answerDisplay.classList.remove('show');
         }
 
         function checkAnswer() {
@@ -845,35 +674,15 @@
             const keyElements = document.querySelectorAll('#inputKeyboard .key');
             keyElements.forEach(k => k.classList.remove('correct', 'wrong'));
 
-            if (trainingMode === 'interval') {
-                const userSorted = [...userInputNotes].sort((a, b) => {
-                    const fa = getFreqFromNoteName(a);
-                    const fb = getFreqFromNoteName(b);
-                    return fa - fb;
-                });
-                const correctSorted = [...currentNoteNames].sort((a, b) => {
-                    const fa = getFreqFromNoteName(a);
-                    const fb = getFreqFromNoteName(b);
-                    return fa - fb;
-                });
-                let allCorrect = true;
-                if (userSorted.length !== correctSorted.length) {
-                    allCorrect = false;
-                } else {
-                    for (let i = 0; i < userSorted.length; i++) {
-                        if (userSorted[i] !== correctSorted[i]) {
-                            allCorrect = false;
-                            break;
-                        }
-                    }
-                }
+            if (trainingMode === 'interval' || trainingMode === 'chord') {
+                const userSorted = [...userInputNotes].sort((a, b) => getFreqFromNoteName(a) - getFreqFromNoteName(b));
+                const correctSorted = [...currentNoteNames].sort((a, b) => getFreqFromNoteName(a) - getFreqFromNoteName(b));
+                let allCorrect = userSorted.length === correctSorted.length &&
+                    userSorted.every((v, i) => v === correctSorted[i]);
                 userInputNotes.forEach(note => {
                     let targetKey = null;
                     keyElements.forEach(k => { if (k.dataset.note === note) targetKey = k; });
-                    if (targetKey) {
-                        const isCorrect = correctSorted.includes(note);
-                        targetKey.classList.add(isCorrect ? 'correct' : 'wrong');
-                    }
+                    if (targetKey) targetKey.classList.add(correctSorted.includes(note) ? 'correct' : 'wrong');
                 });
                 revealAnswer();
                 if (allCorrect) {
@@ -887,14 +696,13 @@
                 for (let i = 0; i < minLen; i++) {
                     const userNote = userInputNotes[i];
                     const correctNote = currentNoteNames[i];
-                    const isCorrect = userNote === correctNote;
                     let targetKey = null;
                     keyElements.forEach(k => { if (k.dataset.note === userNote) targetKey = k; });
-                    if (targetKey) targetKey.classList.add(isCorrect ? 'correct' : 'wrong');
+                    if (targetKey) targetKey.classList.add(userNote === correctNote ? 'correct' : 'wrong');
                 }
                 revealAnswer();
-                const isFullyCorrect = (userInputNotes.length === currentNoteNames.length &&
-                    userInputNotes.every((v, i) => v === currentNoteNames[i]));
+                const isFullyCorrect = userInputNotes.length === currentNoteNames.length &&
+                    userInputNotes.every((v, i) => v === currentNoteNames[i]);
                 if (isFullyCorrect) {
                     statusBar.textContent = '🎉 完全正确！即将自动进入下一题...';
                     setTimeout(() => { nextQuestion(); }, 1200);
@@ -904,52 +712,44 @@
             }
         }
 
-        // ---------- 播放函数（音程听辨已按速度控制时长） ----------
+        // ---------- 播放函数 ----------
         function playIntervalSequence(timesLeft, speed) {
-    if (!isPlaying || timesLeft <= 0) {
-        if (timesLeft <= 0) { statusBar.textContent = '播放完成'; isPlaying = false; }
-        return;
-    }
-    // ---- 修改点：参考音固定 1.5 秒，双音时长由 speed 控制，间隔固定 0.3 秒 ----
-    const refDuration = 1.5;                       // 固定 1.5 秒
-    const chordDuration = Math.max(0.3, speed);   // 双音时长随速度变化，最小 0.3 秒
-    const gap = 0.3;                              // 参考音与双音之间的间隔固定 0.3 秒
+            if (!isPlaying || timesLeft <= 0) {
+                if (timesLeft <= 0) { statusBar.textContent = '播放完成'; isPlaying = false; }
+                return;
+            }
+            const refDuration = 1.5;
+            const chordDuration = Math.max(0.3, speed);
+            const gap = 0.3;
 
-    // 播放参考音
-    const refTimeout = setTimeout(() => {
-        if (!isPlaying) return;
-        playNoteByName(currentReferenceNote, refDuration);
-    }, 0);
-    timeoutIds.push(refTimeout);
+            const refTimeout = setTimeout(() => {
+                if (!isPlaying) return;
+                playNoteByName(currentReferenceNote, refDuration);
+            }, 0);
+            timeoutIds.push(refTimeout);
 
-    // 延迟后播放双音
-    const intervalDelay = (refDuration + gap) * 1000;
-    const intervalTimeout = setTimeout(() => {
-        if (!isPlaying) return;
-        playNoteByName(currentNoteNames[0], chordDuration);
-        playNoteByName(currentNoteNames[1], chordDuration);
-        statusBar.textContent = `音程播放 (${currentRepeatIndex + 1}/${repeatCountTotal})`;
-    }, intervalDelay);
-    timeoutIds.push(intervalTimeout);
+            const intervalDelay = (refDuration + gap) * 1000;
+            const intervalTimeout = setTimeout(() => {
+                if (!isPlaying) return;
+                currentNoteNames.forEach(n => playNoteByName(n, chordDuration));
+                statusBar.textContent = `播放 (${currentRepeatIndex + 1}/${repeatCountTotal})`;
+            }, intervalDelay);
+            timeoutIds.push(intervalTimeout);
 
-    // 总循环间隔 = 参考音 + 间隙 + 双音 + 额外缓冲 0.2 秒
-    const totalDuration = (refDuration + gap + chordDuration + 0.2) * 1000;
-    const nextTimeout = setTimeout(() => {
-        if (!isPlaying) return;
-        currentRepeatIndex++;
-        playIntervalSequence(timesLeft - 1, speed);
-    }, totalDuration);
-    timeoutIds.push(nextTimeout);
+            const totalDuration = (refDuration + gap + chordDuration + 0.2) * 1000;
+            const nextTimeout = setTimeout(() => {
+                if (!isPlaying) return;
+                currentRepeatIndex++;
+                playIntervalSequence(timesLeft - 1, speed);
+            }, totalDuration);
+            timeoutIds.push(nextTimeout);
 
-    if (currentRepeatIndex === 0) {
-        statusBar.textContent = `音程播放 (1/${repeatCountTotal})`;
-    }
-}
+            if (currentRepeatIndex === 0) statusBar.textContent = `播放 (1/${repeatCountTotal})`;
+        }
 
         function playSequence(timesLeft, speed) {
             if (!isPlaying || timesLeft <= 0) {
-                if (timesLeft <= 0) { statusBar.textContent = '播放完成';
-                    isPlaying = false; }
+                if (timesLeft <= 0) { statusBar.textContent = '播放完成'; isPlaying = false; }
                 return;
             }
             currentNoteNames.forEach((noteName, idx) => {
@@ -970,17 +770,12 @@
             if (currentRepeatIndex === 0) statusBar.textContent = `播放中 (1/${repeatCountTotal})`;
         }
 
-        // ---------- 强制停止所有音 ----------
         function stopPlayback() {
             isPlaying = false;
-            // 清除所有定时器
             timeoutIds.forEach(id => clearTimeout(id));
             timeoutIds = [];
-            // 强制停止所有 Howl 实例
             for (let key in soundCache) {
-                if (soundCache[key] && typeof soundCache[key].stop === 'function') {
-                    soundCache[key].stop();
-                }
+                if (soundCache[key] && typeof soundCache[key].stop === 'function') soundCache[key].stop();
             }
             statusBar.textContent = '已停止';
         }
@@ -988,8 +783,11 @@
         // ---------- 生成 ----------
         function generateAndPlay() {
             stopPlayback();
-            const root = rootSelect.value;
-            const octave = parseInt(octaveInput.value) || 3;
+            const rootFull = rootSelect.value || 'A2';
+            const rootMatch = rootFull.match(/^([A-G]#?)(\d)$/);
+            const root = rootMatch ? rootMatch[1] : 'A';
+            const octave = rootMatch ? parseInt(rootMatch[2]) : 2;
+
             const noteCount = parseInt(noteCountInput.value) || 3;
             const speed = parseFloat(speedInput.value) || 1.0;
             const repeatCount = parseInt(repeatCountInput.value) || 1;
@@ -1005,8 +803,8 @@
                 return;
             }
 
-            const noteFreq = { 'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13, 'E': 329.63, 'F': 349.23, 'F#': 369.99,
-                'G': 392.00, 'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88 };
+            const noteFreq = { 'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13, 'E': 329.63, 'F': 349.23,
+                'F#': 369.99, 'G': 392.00, 'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88 };
             const rootFreq = noteFreq[root] * Math.pow(2, octave - 3);
             if (!rootFreq) { alert('起始音频率计算错误'); return; }
 
@@ -1017,20 +815,99 @@
             else if (intervalDeg === 6) maxSemitone = 9;
             else if (intervalDeg === 7) maxSemitone = 11;
             else if (intervalDeg === 8) maxSemitone = 12;
-            else maxSemitone = 0;
 
-            const availableNames = useChromatic ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'] : ['C', 'D',
-                'E', 'F', 'G', 'A', 'B'
-            ];
+            const availableNames = useChromatic
+                ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+                : ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 
-            if (trainingMode === 'interval') {
-                // ---- 音程听辨 ----
+            // ---- 三和弦听辨（三度叠置） ----
+            if (trainingMode === 'chord') {
                 const refNote = root + octave;
                 currentReferenceNote = refNote;
 
+                // 根据复选框筛选允许的和弦类型
+                const allowedTypes = [];
+                if (chkMajor.checked) allowedTypes.push({ third: 4, fifth: 7, name: '大三' });
+                if (chkMinor.checked) allowedTypes.push({ third: 3, fifth: 7, name: '小三' });
+                if (chkDim.checked)   allowedTypes.push({ third: 3, fifth: 6, name: '减三' });
+                if (chkAug.checked)   allowedTypes.push({ third: 4, fifth: 8, name: '增三' });
+
+                if (allowedTypes.length === 0) {
+                    alert('请至少勾选一种和弦类型！');
+                    return;
+                }
+
                 let attempts = 0;
-                let note1, note2;
-                let found = false;
+                let triad = null;
+                const maxAttempts = 3000;
+
+                while (!triad && attempts < maxAttempts) {
+                    attempts++;
+
+                    // 随机选根音
+                    const rootName = availableNames[Math.floor(Math.random() * availableNames.length)];
+                    const rootOct = Math.min(7, Math.max(2, octave + Math.floor(Math.random() * 5) - 2));
+                    const rootFull = rootName + rootOct;
+                    const rootMidi = noteNameToMidi(rootFull);
+                    if (rootMidi === null) continue;
+
+                    // 从允许的类型中随机选一种
+                    const type = allowedTypes[Math.floor(Math.random() * allowedTypes.length)];
+                    const thirdMidi = rootMidi + type.third;
+                    const fifthMidi = rootMidi + type.fifth;
+                    if (thirdMidi > 127 || fifthMidi > 127) continue;
+
+                    const thirdFull = midiToNoteName(thirdMidi);
+                    const fifthFull = midiToNoteName(fifthMidi);
+
+                    const rootF = getFreqFromNoteName(rootFull);
+                    const thirdF = getFreqFromNoteName(thirdFull);
+                    const fifthF = getFreqFromNoteName(fifthFull);
+                    if (!rootF || !thirdF || !fifthF) continue;
+
+                    // 音域检查
+                    if (rootF < lowFreq || rootF > highFreq) continue;
+                    if (thirdF < lowFreq || thirdF > highFreq) continue;
+                    if (fifthF < lowFreq || fifthF > highFreq) continue;
+
+                    // 相邻音程限制：只对最高音（五音）与参考音之间的音程做限制
+                    if (maxSemitone > 0) {
+                        const refF = getFreqFromNoteName(refNote);
+                        const semiDiff = Math.abs(Math.round(12 * Math.log2(fifthF / refF)));
+                        if (semiDiff > maxSemitone) continue;
+                    }
+
+                    triad = [rootFull, thirdFull, fifthFull].sort(
+                        (a, b) => getFreqFromNoteName(a) - getFreqFromNoteName(b)
+                    );
+                }
+
+                if (!triad) {
+                    alert('无法生成符合要求的三和弦，请放宽音域或音程限制，或勾选更多和弦类型。');
+                    return;
+                }
+
+                currentNoteNames = triad;
+                currentMelody = triad.map(n => getFreqFromNoteName(n));
+
+                if (soundMode !== 'synthesized' && !sampleLoadFailed) {
+                    [refNote, ...currentNoteNames].forEach(n => preloadSingleNote(n));
+                }
+
+                clearUserInput();
+                repeatCountTotal = repeatCount;
+                currentRepeatIndex = 0;
+                isPlaying = true;
+                playIntervalSequence(repeatCountTotal, speed);
+                return;
+            }
+
+            // ---- 音程听辨（两个音） ----
+            if (trainingMode === 'interval') {
+                const refNote = root + octave;
+                currentReferenceNote = refNote;
+
+                let attempts = 0, note1, note2, found = false;
                 while (!found && attempts < 500) {
                     attempts++;
                     const name1 = availableNames[Math.floor(Math.random() * availableNames.length)];
@@ -1049,20 +926,11 @@
                     if (maxSemitone > 0 && semitoneDiff > maxSemitone) continue;
                     if (semitoneDiff === 0) continue;
 
-                    note1 = full1;
-                    note2 = full2;
-                    found = true;
+                    note1 = full1; note2 = full2; found = true;
                 }
-                if (!found) {
-                    alert('无法生成符合要求的两个音，请放宽音域或音程限制。');
-                    return;
-                }
+                if (!found) { alert('无法生成符合要求的两个音，请放宽音域或音程限制。'); return; }
 
-                const sorted = [note1, note2].sort((a, b) => {
-                    const fa = getFreqFromNoteName(a);
-                    const fb = getFreqFromNoteName(b);
-                    return fa - fb;
-                });
+                const sorted = [note1, note2].sort((a, b) => getFreqFromNoteName(a) - getFreqFromNoteName(b));
                 currentNoteNames = sorted;
                 currentMelody = sorted.map(n => getFreqFromNoteName(n));
 
@@ -1070,10 +938,7 @@
                     [refNote, ...currentNoteNames].forEach(n => preloadSingleNote(n));
                 }
 
-                answerDisplay.textContent = '';
-                answerDisplay.classList.remove('show');
                 clearUserInput();
-
                 repeatCountTotal = repeatCount;
                 currentRepeatIndex = 0;
                 isPlaying = true;
@@ -1090,8 +955,7 @@
             let lastFullName = root + octave;
             const maxAttempts = 500;
             for (let i = 1; i < noteCount; i++) {
-                let found = false,
-                    attempts = 0;
+                let found = false, attempts = 0;
                 while (!found && attempts < maxAttempts) {
                     attempts++;
                     const nameIdx = Math.floor(Math.random() * availableNames.length);
@@ -1112,10 +976,7 @@
                     lastFullName = fullName;
                     found = true;
                 }
-                if (!found) {
-                    alert(`生成第 ${i+1} 个音符失败，请扩大音域或放宽限制。`);
-                    return;
-                }
+                if (!found) { alert(`生成第 ${i+1} 个音符失败，请扩大音域或放宽限制。`); return; }
             }
 
             currentMelody = freqs;
@@ -1128,9 +989,6 @@
             }
 
             noteDisplay.innerHTML = freqs.map(() => `<span class="highlight">•</span>`).join(' ');
-            answerDisplay.textContent = '';
-            answerDisplay.classList.remove('show');
-            statusBar.textContent = `生成完成，将播放 ${repeatCount} 次`;
             clearUserInput();
 
             isPlaying = true;
@@ -1138,7 +996,7 @@
         }
 
         function repeatCurrentMelody() {
-            if (trainingMode === 'interval') {
+            if (trainingMode === 'interval' || trainingMode === 'chord') {
                 if (currentNoteNames.length === 0) { generateAndPlay(); return; }
                 stopPlayback();
                 const repeatCount = parseInt(repeatCountInput.value) || 1;
@@ -1157,16 +1015,11 @@
             currentRepeatIndex = 0;
             isPlaying = true;
             noteDisplay.innerHTML = currentNoteNames.map(() => `<span class="highlight">•</span>`).join(' ');
-            answerDisplay.classList.remove('show');
-            statusBar.textContent = `重复播放 ${repeatCount} 次`;
             playSequence(repeatCount, speed);
         }
 
-        function nextQuestion() {
-            generateAndPlay();
-        }
+        function nextQuestion() { generateAndPlay(); }
 
-        // 事件绑定
         playBtn.addEventListener('click', generateAndPlay);
         repeatBtn.addEventListener('click', repeatCurrentMelody);
         revealBtn.addEventListener('click', revealAnswer);
@@ -1177,8 +1030,7 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-            if (e.code === 'Space') { e.preventDefault();
-                repeatCurrentMelody(); }
+            if (e.code === 'Space') { e.preventDefault(); repeatCurrentMelody(); }
         });
 
         window.addEventListener('load', () => {
@@ -1189,9 +1041,9 @@
             preloadAllKeyboardNotes();
             modeSelect.value = 'melody';
             trainingMode = 'melody';
+            chordTypeGroup.classList.remove('show');
 
-            // ---- 设置默认值 ----
-            rootSelect.value = 'A';
+            if ([...rootSelect.options].some(o => o.value === 'A3')) rootSelect.value = 'A3';
             lowNoteSelect.value = 'G2';
             highNoteSelect.value = 'D4';
         });
