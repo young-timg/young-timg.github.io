@@ -605,48 +605,58 @@
         fillNoteRangeSelect(highNoteSelect, 'E4');
 
         function buildInputKeyboard() {
-            inputKeyboard.innerHTML = '';
-            const allKeys = [];
-            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-            let currentOct = 2, currentIdx = noteNames.indexOf('E');
-            const endOct = 4, endIdx = noteNames.indexOf('E');
-            while (true) {
-                const noteName = noteNames[currentIdx];
-                allKeys.push(noteName + currentOct);
-                if (currentOct === endOct && currentIdx === endIdx) break;
-                currentIdx++;
-                if (currentIdx === 12) { currentIdx = 0; currentOct++; }
-            }
-            const blackKeys = ['C#', 'D#', 'F#', 'G#', 'A#'];
-            allKeys.forEach(full => {
-                const name = full.replace(/\d$/, '');
-                const isBlack = blackKeys.includes(name);
-                const keyDiv = document.createElement('div');
-                keyDiv.className = 'key ' + (isBlack ? 'black' : 'white');
-                keyDiv.dataset.note = full;
-                keyDiv.textContent = isBlack ? '♯' : name;
-                keyDiv.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const note = this.dataset.note;
-                    playNoteByName(note, 0.6);
-                    if (trainingMode === 'interval') {
-                        if (userInputNotes.length >= 2) userInputNotes = [];
-                        userInputNotes.push(note);
-                        userInputNotes.sort((a, b) => getFreqFromNoteName(a) - getFreqFromNoteName(b));
-                    } else if (trainingMode === 'chord') {
-                        if (userInputNotes.length >= 3) userInputNotes = [];
-                        userInputNotes.push(note);
-                        userInputNotes.sort((a, b) => getFreqFromNoteName(a) - getFreqFromNoteName(b));
-                    } else {
-                        userInputNotes.push(note);
-                    }
-                    updateUserInputDisplay();
-                    this.classList.add('selected');
-                    setTimeout(() => this.classList.remove('selected'), 200);
-                });
-                inputKeyboard.appendChild(keyDiv);
-            });
-        }
+			inputKeyboard.innerHTML = '';
+			const allKeys = [];
+			const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+			let currentOct = 2, currentIdx = noteNames.indexOf('E');
+			const endOct = 4, endIdx = noteNames.indexOf('E');
+			while (true) {
+				const noteName = noteNames[currentIdx];
+				allKeys.push(noteName + currentOct);
+				if (currentOct === endOct && currentIdx === endIdx) break;
+				currentIdx++;
+				if (currentIdx === 12) { currentIdx = 0; currentOct++; }
+			}
+			const blackKeys = ['C#', 'D#', 'F#', 'G#', 'A#'];
+			allKeys.forEach(full => {
+				const match = full.match(/^([A-G]#?)(\d)$/);
+				const name = match[1];
+				const octave = match[2];
+				const isBlack = blackKeys.includes(name);
+
+				const keyDiv = document.createElement('div');
+				keyDiv.className = 'key ' + (isBlack ? 'black' : 'white');
+				keyDiv.dataset.note = full;
+
+				// 音名 + 下标八度
+				if (isBlack) {
+					keyDiv.textContent = '♯';
+				} else {
+					keyDiv.innerHTML = name + '<sub>' + octave + '</sub>';
+				}
+
+				keyDiv.addEventListener('click', function(e) {
+				e.stopPropagation();
+				const note = this.dataset.note;
+				playNoteByName(note, 0.6);
+				if (trainingMode === 'interval') {
+					if (userInputNotes.length >= 2) userInputNotes = [];
+						userInputNotes.push(note);
+						userInputNotes.sort((a, b) => getFreqFromNoteName(a) - getFreqFromNoteName(b));
+				} else if (trainingMode === 'chord') {
+					if (userInputNotes.length >= 3) userInputNotes = [];
+						userInputNotes.push(note);
+						userInputNotes.sort((a, b) => getFreqFromNoteName(a) - getFreqFromNoteName(b));
+				} else {
+					userInputNotes.push(note);
+				}
+				updateUserInputDisplay();
+				this.classList.add('selected');
+				setTimeout(() => this.classList.remove('selected'), 200);
+			});
+			inputKeyboard.appendChild(keyDiv);
+		});
+	}
         buildInputKeyboard();
 
         function updateUserInputDisplay() {
